@@ -7,7 +7,7 @@ class Block4Byte(BlockInterface):
         self.__data = data
 
     def get_address(self) -> int:
-        pass
+        return 0
 
     def get_data(self) -> str:
-        pass
+        return ""

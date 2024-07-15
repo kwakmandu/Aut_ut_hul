@@ -1,20 +1,20 @@
 class Validate:
-    def is_valid_data(self):
+    def is_valid_data(self) -> None:
         pass
 
-    def is_valid_LBA_addr(self):
+    def is_valid_LBA_addr(self) -> None:
         pass
 
-    def command_string_parser(self):
+    def command_string_parser(self) -> None:
         pass
 
 
 class Shell:
 
-    def __init__(self):
+    def __init__(self) -> None:
         pass
 
-    def run(self):
+    def run(self) -> None:
 
         while True:
             inputs = input().split(" ")
@@ -36,22 +36,22 @@ class Shell:
             elif inputs[0] == "fullread":
                 pass
 
-    def write(self, address: int, data: str) -> None:
+    def write(self, address: str, data: str) -> None:
         pass
 
-    def read(self, address: int) -> None:
+    def read(self, address: str) -> None:
         pass
 
-    def exit(self):
+    def exit(self) -> None:
         pass
 
-    def help(self):
+    def help(self) -> None:
         pass
 
-    def fullwrite(self):
+    def fullwrite(self) -> None:
         pass
 
-    def fullread(self):
+    def fullread(self) -> None:
         pass
 
 
