@@ -1,11 +1,13 @@
 from abc import ABC, abstractmethod
 
+from Block.block4Byte import Block4Byte
+
 
 class StorageDeviceInterface(ABC):
     @abstractmethod
-    def write(self):
+    def write(self, block: Block4Byte) -> None:
         pass
 
     @abstractmethod
-    def read(self):
+    def read(self, address: int) -> None:
         pass
