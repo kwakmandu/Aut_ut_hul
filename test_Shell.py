@@ -8,9 +8,8 @@ class TestShell(TestCase):
     def setUp(self):
         self.shell = Shell()
 
-    @skip
     @patch("builtins.input", side_effect=["exit"])
-    def test_exit(self):
+    def test_exit(self, mock_input):
         self.shell.run()
         self.assertFalse(self.shell.is_run)
 
