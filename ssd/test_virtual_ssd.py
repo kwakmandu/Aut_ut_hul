@@ -13,7 +13,7 @@ class Test(TestCase):
         ssd = VirtualSSD()
         data_will_be_write = "0xAAAABBBB"
         block_will_be_write = Block4Byte(0, data_will_be_write)
-        nand_csv_file_path = "nand.csv"
+        nand_csv_file_path = "test_nand.csv"
         if os.path.exists(nand_csv_file_path):
             os.remove(nand_csv_file_path)
 
