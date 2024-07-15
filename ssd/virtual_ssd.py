@@ -1,5 +1,5 @@
-from Block.block4Byte import Block4Byte
-from Ssd.storageDeviceInterface import StorageDeviceInterface
+from block.block_4byte import Block4Byte
+from ssd.storage_device_interface import StorageDeviceInterface
 
 
 class VirtualSSD(StorageDeviceInterface):
