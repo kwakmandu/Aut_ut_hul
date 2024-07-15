@@ -1,29 +1,29 @@
 class Validate:
-    def is_valid_data(self):
+    def is_valid_data(self) -> None:
         pass
 
-    def is_valid_LBA_addr(self):
+    def is_valid_LBA_addr(self) -> None:
         pass
 
-    def command_string_parser(self):
+    def command_string_parser(self) -> None:
         pass
 
 
 class Shell:
-    def write(self):
+    def write(self) -> None:
         pass
 
-    def read(self):
+    def read(self) -> None:
         pass
 
-    def exit(self):
+    def exit(self) -> None:
         pass
 
-    def help(self):
+    def help(self) -> None:
         pass
 
-    def fullwrite(self):
+    def fullwrite(self) -> None:
         pass
 
-    def fullread(self):
+    def fullread(self) -> None:
         pass
