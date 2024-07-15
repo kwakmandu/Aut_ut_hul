@@ -120,3 +120,4 @@ fabric.properties
 /.venv
 /venv
 /.idea
+__pycache__
