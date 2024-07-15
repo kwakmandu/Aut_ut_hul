@@ -3,11 +3,11 @@ class StorageDeviceIF:
 
 
 class VirtualSSD:
-    def read_command(self):
+    def read_command(self) -> None:
         pass
 
-    def write(self):
+    def write(self) -> None:
         pass
 
-    def read(self):
+    def read(self) -> None:
         pass
