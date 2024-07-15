@@ -7,7 +7,6 @@ import os
 
 
 class Test(TestCase):
-    @skip
     def test_virtual_ssd_write_1(self) -> None:
         # arrange
         ssd = VirtualSSD()
@@ -19,4 +18,4 @@ class Test(TestCase):
 
         # assert
         actual = ssd.nand_df.iloc[addr_will_be_write]
-        self.assertEqual(data_will_be_write, actual['Data'])
+        self.assertEqual(data_will_be_write, actual["Data"])
