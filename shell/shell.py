@@ -23,10 +23,10 @@ class Shell:
         while True:
             inputs = input().split(" ")
             if inputs[0] == "ssd" and inputs[1] == "W":
-                self.write(inputs[2], inputs[3])
+                self.write(int(inputs[2]), inputs[3])
 
             if inputs[0] == "ssd" and inputs[1] == "R":
-                self.read(inputs[2])
+                self.read(int(inputs[2]))
 
             elif inputs[0] == "exit":
                 break
