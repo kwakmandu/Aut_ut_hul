@@ -19,6 +19,7 @@ class Shell:
     def __init__(self) -> None:
         self.is_run = False
         self.ssd_path: str = "../ssd"
+        self.test_script_path: str = "../testscript"
         self.help_information = [
             "Available commands:",
             "  write <LBA> <value>  - Write value to the specified LBA",
@@ -138,9 +139,9 @@ class Shell:
 
     def run_testscript(self, testcase) -> None:
         if testcase == "testapp1":
-            self.run_test("testscript/TestApp01.txt")
+            self.run_test(f"{self.test_script_path}/TestApp01.txt")
         elif testcase == "testapp2":
-            self.run_test("testscript/TestApp02.txt")
+            self.run_test(f"{self.test_script_path}/TestApp02.txt")
         else:
             print("INVALID COMMAND")
 
