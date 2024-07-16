@@ -1,4 +1,5 @@
 import sys
+from typing import Optional
 
 from ssd.storage_device_interface import StorageDeviceInterface
 import pandas as pd
@@ -37,13 +38,20 @@ class VirtualSSD(StorageDeviceInterface):
         result_df = result_df.replace("\n", "")
 
         with open(self.result_path, "w", encoding="utf-8") as file:
-            file.write(result_df.loc[0, "Data"])
+            file.write(str(result_df.loc[0, "Data"]))
 
 
 if __name__ == "__main__":
     ssd = VirtualSSD()
+    cmd: Optional[str]
+    address: Optional[str]
+    value: Optional[str]
+
     cmd, address, value = (sys.argv[1:4] + [None] * 3)[:3]
+
     if cmd == "W":
-        ssd.write(int(address), value)
+        if address is not None and value is not None:
+            ssd.write(int(address), value)
     elif cmd == "R":
-        ssd.read(int(address))
+        if address is not None:
+            ssd.read(int(address))
