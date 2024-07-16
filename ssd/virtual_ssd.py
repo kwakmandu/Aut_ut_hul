@@ -1,4 +1,3 @@
-from block.block_4byte import Block4Byte
 from ssd.storage_device_interface import StorageDeviceInterface
 import pandas as pd
 import os
@@ -33,3 +32,11 @@ class VirtualSSD(StorageDeviceInterface):
         )
         result_df = result_df.replace("\n", "")
         result_df.to_csv(self.result_path, index_label="index")
+
+if __name__ == '__main__':
+    ssd = VirtualSSD()
+    cmd, address, value = sys.argv[1:]
+    if cmd == 'W':
+        ssd.write(address, value)
+    elif cmd == 'R':
+        ssd.read(address)
