@@ -17,6 +17,15 @@ class Shell:
 
     def __init__(self) -> None:
         self.is_run = False
+        self.help_information = [
+            "Available commands:",
+            "  write <LBA> <value>  - Write value to the specified LBA",
+            "  read <LBA>           - Read value from the specified LBA",
+            "  fullwrite <value>    - Write value to all LBAs",
+            "  fullread             - Read values from all LBAs",
+            "  exit                 - Exit the shell",
+            "  help                 - Show this help message",
+        ]
 
     def run(self) -> None:
         self.is_run = True
@@ -50,16 +59,7 @@ class Shell:
         self.is_run = False
 
     def help(self) -> None:
-        help_information = [
-            "Available commands:",
-            "  write <LBA> <value>  - Write value to the specified LBA",
-            "  read <LBA>           - Read value from the specified LBA",
-            "  fullwrite <value>    - Write value to all LBAs",
-            "  fullread             - Read values from all LBAs",
-            "  exit                 - Exit the shell",
-            "  help                 - Show this help message",
-        ]
-        for h_info in help_information:
+        for h_info in self.help_information:
             print(h_info)
 
     def fullwrite(self) -> None:
