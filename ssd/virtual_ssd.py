@@ -43,6 +43,6 @@ if __name__ == '__main__':
     ssd = VirtualSSD()
     cmd, address, value = sys.argv[1:]
     if cmd == 'W':
-        ssd.write(address, value)
+        ssd.write(int(address), value)
     elif cmd == 'R':
-        ssd.read(address)
+        ssd.read(int(address))
