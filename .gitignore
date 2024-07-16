@@ -122,7 +122,7 @@ fabric.properties
 /.idea
 __pycache__
 nand.csv
-/.ssd/nand.csv
+/ssd/nand.csv
 result.csv
 /.ssd/result.csv
 result.txt
