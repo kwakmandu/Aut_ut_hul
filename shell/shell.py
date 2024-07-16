@@ -138,9 +138,9 @@ class Shell:
 
     def run_testscript(self, testcase) -> None:
         if testcase == "testapp1":
-            self.run_test("testscript/TestApp1.txt")
+            self.run_test("testscript/TestApp01.txt")
         elif testcase == "testapp2":
-            self.run_test("testscript/TestApp2.txt")
+            self.run_test("testscript/TestApp02.txt")
         else:
             print("WRONG COMMAND")
             self.exit()
