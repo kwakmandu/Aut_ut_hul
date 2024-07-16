@@ -9,6 +9,8 @@ ALLOWED_INITIAL_COMMANDS = [
     "help",
     "fullwrite",
     "fullread",
+    "testapp1",
+    "testapp2",
 ]  # test 명령어 추가 필요
 
 
