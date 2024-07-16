@@ -142,8 +142,7 @@ class Shell:
         elif testcase == "testapp2":
             self.run_test("testscript/TestApp02.txt")
         else:
-            print("WRONG COMMAND")
-            self.exit()
+            print("INVALID COMMAND")
 
     def run_test(self, test_file):
         with open(test_file, "r", encoding="utf-8") as file:
