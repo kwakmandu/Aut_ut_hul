@@ -148,7 +148,7 @@ class Shell:
         with open(test_file, "r", encoding="utf-8") as file:
             # 파일을 한 줄씩 읽기
             for line in file:
-                self.select_commands(line.strip())
+                self.select_commands(line.split(" "))
 
 
 if __name__ == "__main__":
