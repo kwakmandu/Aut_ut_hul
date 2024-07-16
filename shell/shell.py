@@ -79,6 +79,4 @@ class Shell:
 
 if __name__ == "__main__":
     shell = Shell()
-    # shell.run()
-    shell.write(1, "0x01010101")
-    shell.read(1)
+    shell.run()
