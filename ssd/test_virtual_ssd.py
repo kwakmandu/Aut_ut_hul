@@ -23,6 +23,7 @@ class Test(TestCase):
         # arrange
         ssd = VirtualSSD()
         addr_will_be_read = 30
+        data_init_value = "0x00000000"
 
         # act
         ssd.read(addr_will_be_read)
@@ -31,7 +32,7 @@ class Test(TestCase):
         actual = pd.read_csv(ssd.result_path)
 
         # assert
-        self.assertEqual("0x00000000", actual.loc[0, "Data"])
+        self.assertEqual(data_init_value, actual.loc[0, "Data"])
 
     def test_virtual_ssd_read_case_적은곳(self) -> None:
         # arrange
