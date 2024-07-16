@@ -50,3 +50,20 @@ class TestShell(TestCase):
             mock_print.assert_any_call(
                 "  help                 - Show this help message"
             )
+
+    @patch("builtins.input", side_effect=["fullwrite 0xABCDFFFF", "exit"])
+    @patch.object(VirtualSSD, "write")
+    def test_fullwrite_command(self, mock_write, mock_input):
+        self.shell.run()
+        self.assertEqual(mock_write.call_count, 100)
+        mock_write.assert_any_call(0, "0xABCDFFFF")
+        mock_write.assert_any_call(99, "0xABCDFFFF")
+
+    @patch("builtins.input", side_effect=["fullread", "exit"])
+    @patch.object(VirtualSSD, "read", return_value="0x1298CDEF")
+    def test_fullread_command(self, mock_read, mock_input):
+        with patch("builtins.print") as mock_print:
+            self.shell.run()
+            self.assertEqual(mock_read.call_count, 100)
+            mock_read.assert_any_call(0)
+            mock_read.assert_any_call(99)
