@@ -1,3 +1,5 @@
+import subprocess
+
 from ssd.storage_device_interface import StorageDeviceInterface
 from ssd.virtual_ssd import VirtualSSD
 
@@ -51,10 +53,13 @@ class Shell:
                 self.fullread()
 
     def write(self, address: int, data: str) -> None:
-        self.ssd.write(address, data)
+        subprocess.run(["python", "../ssd/virtual_ssd.py", "W", str(address), data])
 
     def read(self, address: int) -> None:
-        print(self.ssd.read(address))
+        subprocess.run(["python", "../ssd/virtual_ssd.py", "R", str(address)])
+        with open("result.txt", "r") as file:
+            file_contents = file.read()
+        print(file_contents)
 
     def exit(self) -> None:
         self.is_run = False
@@ -74,4 +79,6 @@ class Shell:
 
 if __name__ == "__main__":
     shell = Shell()
-    shell.run()
+    # shell.run()
+    shell.write(1, "0x01010101")
+    shell.read(1)
