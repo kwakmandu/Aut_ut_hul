@@ -11,7 +11,7 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 class VirtualSSD(StorageDeviceInterface):
     def __init__(self) -> None:
         self.nand_path = "nand.csv"
-        self.result_path = "result.txt  "
+        self.result_path = "result.txt"
 
         if not os.path.exists(self.nand_path):
             self.nand_df = pd.DataFrame(
