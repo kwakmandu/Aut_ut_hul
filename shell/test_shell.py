@@ -1,3 +1,4 @@
+import sys
 from unittest import TestCase, skip, mock
 from unittest.mock import Mock, patch, MagicMock, mock_open
 
@@ -82,7 +83,7 @@ class TestShell(TestCase):
         data = "0x1298CDEF"
         self.shell.write(address, data)
         mock_subprocess_run.assert_called_with(
-            ["python", "../ssd/virtual_ssd.py", "W", str(address), data]
+            [sys.executable, "../ssd/virtual_ssd.py", "W", str(address), data]
         )
 
     @patch("subprocess.run")
@@ -95,7 +96,7 @@ class TestShell(TestCase):
         with patch("builtins.print") as mock_print:
             self.shell.read(address)
             mock_subprocess_run.assert_called_with(
-                ["python", "../ssd/virtual_ssd.py", "R", address]
+                [sys.executable, "../ssd/virtual_ssd.py", "R", address]
             )
             mock_open.assert_called_with("../ssd/result.txt", "r")
             mock_open.return_value.read.assert_called_once()
