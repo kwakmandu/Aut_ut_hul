@@ -1,5 +1,6 @@
 import subprocess
 import sys
+from helper import Helper
 
 
 ALLOWED_INITIAL_COMMANDS = [
@@ -29,6 +30,7 @@ class Shell:
             "  exit                 - Exit the shell",
             "  help                 - Show this help message",
         ]
+        self.helper = Helper()
 
     def is_valid_command(self, inputs: list) -> bool:
         if inputs[0] not in ALLOWED_INITIAL_COMMANDS:
@@ -126,7 +128,7 @@ class Shell:
         self.is_run = False
 
     def help(self) -> None:
-        for h_info in self.help_information:
+        for h_info in self.helper.get_help_information():
             print(h_info)
 
     def fullwrite(self, data: str) -> None:
