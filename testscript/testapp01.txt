@@ -1,2 +1,2 @@
-fullwrite 0xABCDFFF
+fullwrite 0xABCDFFFF
 fullread
