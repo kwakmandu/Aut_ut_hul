@@ -121,3 +121,7 @@ fabric.properties
 /venv
 /.idea
 __pycache__
+nand.csv
+/ssd/nand.csv
+result.csv
+/ssd/result.csv
