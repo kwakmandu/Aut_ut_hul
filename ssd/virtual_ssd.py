@@ -11,7 +11,7 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 class VirtualSSD(StorageDeviceInterface):
     def __init__(self) -> None:
         self.nand_path = "nand.csv"
-        self.result_path = "result.csv"
+        self.result_path = "result.txt"
 
         if not os.path.exists(self.nand_path):
             self.nand_df = pd.DataFrame(
@@ -39,10 +39,11 @@ class VirtualSSD(StorageDeviceInterface):
         with open(self.result_path, "w", encoding="utf-8") as file:
             file.write(result_df.loc[0, "Data"])
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     ssd = VirtualSSD()
     cmd, address, value = sys.argv[1:]
-    if cmd == 'W':
+    if cmd == "W":
         ssd.write(int(address), value)
-    elif cmd == 'R':
+    elif cmd == "R":
         ssd.read(int(address))
