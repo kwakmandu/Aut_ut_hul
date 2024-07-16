@@ -45,10 +45,10 @@ class Shell:
                 self.help()
 
             elif inputs[0] == "fullwrite":
-                pass
+                self.fullwrite(inputs[1])
 
             elif inputs[0] == "fullread":
-                pass
+                self.fullread()
 
     def write(self, address: int, data: str) -> None:
         self.ssd.write(address, data)
@@ -63,11 +63,13 @@ class Shell:
         for h_info in self.help_information:
             print(h_info)
 
-    def fullwrite(self) -> None:
-        pass
+    def fullwrite(self, data: str) -> None:
+        for i in range(100):
+            self.ssd.write(i, data)
 
     def fullread(self) -> None:
-        pass
+        for i in range(100):
+            self.read(i)
 
 
 if __name__ == "__main__":
