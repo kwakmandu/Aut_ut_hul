@@ -35,6 +35,12 @@ class TestShell(TestCase):
             self.shell.run()
             mock_print.assert_any_call("INVALID COMMAND")
 
+    @patch("builtins.input", side_effect=["write 100 0x00001111 invalid", "exit"])
+    def test_invalid_write_command_wrong_args(self, mock_input):
+        with patch("builtins.print") as mock_print:
+            self.shell.run()
+            mock_print.assert_any_call("INVALID COMMAND")
+
     @patch("builtins.input", side_effect=["read 100", "exit"])
     def test_invalid_read_command_address_not_in_range(self, mock_input):
         with patch("builtins.print") as mock_print:
@@ -61,6 +67,12 @@ class TestShell(TestCase):
 
     @patch("builtins.input", side_effect=["fullwrite 1x1298CDEF", "exit"])
     def test_invalid_fullwrite_command_data_initial_not_0x(self, mock_input):
+        with patch("builtins.print") as mock_print:
+            self.shell.run()
+            mock_print.assert_any_call("INVALID COMMAND")
+
+    @patch("builtins.input", side_effect=["fullwrite 0x00110011 invalid", "exit"])
+    def test_invalid_fullwrite_command_wrong_args(self, mock_input):
         with patch("builtins.print") as mock_print:
             self.shell.run()
             mock_print.assert_any_call("INVALID COMMAND")
