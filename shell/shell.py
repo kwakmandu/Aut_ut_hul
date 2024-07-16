@@ -83,7 +83,7 @@ class Shell:
                 continue
             self.select_commands(inputs)
 
-    def select_commands(self, inputs) -> None:
+    def select_commands(self, inputs: list[str]) -> None:
         if inputs[0] == "write":
             self.write(int(inputs[1]), inputs[2])
 
