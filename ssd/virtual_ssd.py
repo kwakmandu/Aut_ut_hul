@@ -3,6 +3,7 @@ import pandas as pd
 import os
 
 INIT_VALUE = "0x00000000"
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 
 class VirtualSSD(StorageDeviceInterface):
