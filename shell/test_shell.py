@@ -1,5 +1,5 @@
-from unittest import TestCase, skip
-from unittest.mock import Mock, patch
+from unittest import TestCase, skip, mock
+from unittest.mock import Mock, patch, MagicMock, mock_open
 
 from shell import Shell
 from ssd.virtual_ssd import VirtualSSD
@@ -10,19 +10,30 @@ class TestShell(TestCase):
     def setUp(self):
         self.shell = Shell()
 
-    @patch("builtins.input", side_effect=["ssd W 3 0x1298CDEF", "exit"])
-    @patch.object(VirtualSSD, "write")
-    def test_write_command(self, mock_write, mock_input) -> None:
-        self.shell.run()
-        mock_write.assert_called_with(3, "0x1298CDEF")
+    @patch("subprocess.run")
+    def test_write_command(self, mock_subprocess_run):
+        address = 3
+        data = "0x1298CDEF"
+        self.shell.write(address, data)
+        mock_subprocess_run.assert_called_with(
+            ["python", "../ssd/virtual_ssd.py", "W", str(address), data]
+        )
 
-    @patch("builtins.input", side_effect=["ssd R 3", "exit"])
-    @patch.object(VirtualSSD, "read", return_value="0x1298CDEF")
-    def test_read_command(self, mock_read, mock_input) -> None:
+    @patch("subprocess.run")
+    @patch("builtins.open", new_callable=mock_open, read_data="1")
+    def test_read_command(self, mock_open, mock_subprocess_run):
+        address = 3
+
+        mock_open.return_value.read.return_value = "0x1298CDEF"
+
         with patch("builtins.print") as mock_print:
-            self.shell.run()
-            mock_read.assert_called_with(3)
-            mock_print.assert_any_call("0x1298CDEF")
+            self.shell.read(address)
+            mock_subprocess_run.assert_called_with(
+                ["python", "../ssd/virtual_ssd.py", "R", str(address)]
+            )
+            mock_open.assert_called_with("result.txt", "r")
+            mock_open.return_value.read.assert_called_once()
+            mock_print.assert_called_with("0x1298CDEF")
 
     @patch("builtins.input", side_effect=["exit"])
     def test_exit(self, mock_input):
