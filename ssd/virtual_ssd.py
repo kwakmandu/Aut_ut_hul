@@ -8,7 +8,7 @@ INIT_VALUE = "0x00000000"
 
 
 class VirtualSSD(StorageDeviceInterface):
-    def __init__(self):
+    def __init__(self) -> None:
         self.nand_path = "nand.csv"
         self.result_path = "result.csv"
 
