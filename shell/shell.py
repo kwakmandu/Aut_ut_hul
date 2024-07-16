@@ -21,16 +21,6 @@ class Shell:
         self.is_run = False
         self.ssd_path: str = "../ssd"
         self.test_script_path: str = "../testscript"
-        self.help_information = [
-            "Available commands:",
-            "  write <LBA> <value>  - Write value to the specified LBA",
-            "  read <LBA>           - Read value from the specified LBA",
-            "  fullwrite <value>    - Write value to all LBAs",
-            "  fullread             - Read values from all LBAs",
-            "  exit                 - Exit the shell",
-            "  help                 - Show this help message",
-        ]
-        self.helper = Helper()
         self.helper: Helper = Helper()
 
     def is_valid_command(self, inputs: list[str]) -> bool:
