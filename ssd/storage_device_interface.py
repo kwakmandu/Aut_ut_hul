@@ -1,7 +1,5 @@
 from abc import ABC, abstractmethod
 
-from block.block_4byte import Block4Byte
-
 
 class StorageDeviceInterface(ABC):
     @abstractmethod

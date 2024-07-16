@@ -1,8 +1,5 @@
-from unittest import TestCase, skip
-from ssd.virtual_ssd import VirtualSSD
-
-import pandas as pd
-import os
+from unittest import TestCase
+from virtual_ssd import VirtualSSD
 
 
 class Test(TestCase):
