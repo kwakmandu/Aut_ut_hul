@@ -94,7 +94,7 @@ class Shell:
         )
         try:
             with open(f"{self.ssd_path}/result.txt", "r") as file:
-                file_contents = file.read()
+                file_contents = file.read().strip()
                 print(file_contents)
         except FileNotFoundError:
             print("파일이 존재하지 않습니다.")
