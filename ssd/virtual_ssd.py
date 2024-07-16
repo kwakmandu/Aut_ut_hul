@@ -28,7 +28,6 @@ class VirtualSSD(StorageDeviceInterface):
         self.nand_df = pd.read_csv(self.nand_path)
         if os.path.exists(self.result_path):
             os.remove(self.result_path)
-        print(self.nand_df.loc[address, "Data"])
         result_df = pd.DataFrame(
             data=[self.nand_df.loc[address, "Data"]], columns=["Data"]
         )
