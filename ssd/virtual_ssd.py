@@ -17,15 +17,20 @@ class VirtualSSD(StorageDeviceInterface):
             )
             self.nand_df.to_csv(self.nand_path)
 
-    def write(self, addr: int, data: str) -> None:
+    def write(self, address: int, data: str) -> None:
         self.nand_df = pd.read_csv(self.nand_path)
-        self.nand_df.loc[addr, "Data"] = data
+        self.nand_df.loc[address, "Data"] = data
         if os.path.exists(self.nand_path):
             os.remove(self.nand_path)
         self.nand_df["Data"].to_csv(self.nand_path, index_label="index")
 
     def read(self, address: int) -> None:
-        pass
-
-
-ssd = VirtualSSD()
+        self.nand_df = pd.read_csv(self.nand_path)
+        if os.path.exists(self.result_path):
+            os.remove(self.result_path)
+        print(self.nand_df.loc[address, "Data"])
+        result_df = pd.DataFrame(
+            data=[self.nand_df.loc[address, "Data"]], columns=["Data"]
+        )
+        result_df = result_df.replace("\n", "")
+        result_df.to_csv(self.result_path, index_label="index")
