@@ -1,7 +1,11 @@
+import contextlib
+import io
+import os
 import subprocess
 import sys
 from helper import Helper
 
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 ALLOWED_INITIAL_COMMANDS = [
     "write",
@@ -27,6 +31,8 @@ class Shell:
         if inputs[0] not in ALLOWED_INITIAL_COMMANDS:
             return False
 
+        if len(inputs) == 1:
+            return True
         # write
         if inputs[0] == "write":
             return (
@@ -116,17 +122,40 @@ class Shell:
 
     def run_testscript(self, testcase: str) -> None:
         if testcase == "testapp1":
-            self.run_test(f"{self.test_script_path}/TestApp01.txt")
+            self.run_test(
+                f"{self.test_script_path}/TestApp01.txt",
+                f"{self.test_script_path}/TestAppResult01.txt",
+            )
         elif testcase == "testapp2":
-            self.run_test(f"{self.test_script_path}/TestApp02.txt")
+            self.run_test(
+                f"{self.test_script_path}/TestApp02.txt",
+                f"{self.test_script_path}/TestAppResult02.txt",
+            )
         else:
             print("INVALID COMMAND")
 
-    def run_test(self, test_file: str) -> None:
+    def run_test(self, test_file: str, result_file: str) -> bool:
         with open(test_file, "r", encoding="utf-8") as file:
-            # 파일을 한 줄씩 읽기
-            for line in file:
-                self.select_commands(line.split(" "))
+            output = io.StringIO()
+            with contextlib.redirect_stdout(output):
+                # 파일을 한 줄씩 읽기
+                for line in file:
+                    self.select_commands(line.strip().split())
+
+            captured_output = output.getvalue()
+            result_contents = self.read_test_result(result_file)
+
+            if captured_output == result_contents:
+                print(f"pass {test_file}")
+                return True
+            else:
+                print(f"fail {test_file}")
+                return False
+
+    def read_test_result(self, file_path) -> str:
+        """주어진 경로의 파일을 읽어 내용 반환"""
+        with open(file_path, "r", encoding="utf-8") as file:
+            return file.read()
 
 
 if __name__ == "__main__":
