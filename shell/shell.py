@@ -88,7 +88,7 @@ class Shell:
             self.write(inputs[1], inputs[2])
 
         elif inputs[0] == "read":
-            self.read(int(inputs[1]))
+            self.read(inputs[1])
 
         elif inputs[0] == "exit":
             self.exit()
