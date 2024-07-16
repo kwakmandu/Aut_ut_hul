@@ -1,7 +1,5 @@
 import subprocess
-
-from ssd.storage_device_interface import StorageDeviceInterface
-from ssd.virtual_ssd import VirtualSSD
+import sys
 
 
 ALLOWED_INITIAL_COMMANDS = [
@@ -112,11 +110,13 @@ class Shell:
 
     def write(self, address: str, data: str) -> None:
         subprocess.run(
-            ["python", f"{self.ssd_path}/virtual_ssd.py", "W", address, data]
+            [sys.executable, f"{self.ssd_path}/virtual_ssd.py", "W", address, data]
         )
 
     def read(self, address: str) -> None:
-        subprocess.run(["python", f"{self.ssd_path}/virtual_ssd.py", "R", address])
+        subprocess.run(
+            [sys.executable, f"{self.ssd_path}/virtual_ssd.py", "R", address]
+        )
         try:
             with open(f"{self.ssd_path}/result.txt", "r") as file:
                 file_contents = file.read()
