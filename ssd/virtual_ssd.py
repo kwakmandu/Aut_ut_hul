@@ -42,8 +42,8 @@ class VirtualSSD(StorageDeviceInterface):
 
 if __name__ == "__main__":
     ssd = VirtualSSD()
-    cmd, address, value = sys.argv[1:]
+    cmd, address, value = (sys.argv[1:4] + [None] * 3)[:3]
     if cmd == "W":
-        ssd.write(address, value)
+        ssd.write(int(address), value)
     elif cmd == "R":
-        ssd.read(address)
+        ssd.read(int(address))

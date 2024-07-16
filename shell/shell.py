@@ -29,7 +29,7 @@ class Shell:
 
     def __init__(self) -> None:
         self.is_run = False
-        self.ssd: StorageDeviceInterface = VirtualSSD()
+        self.ssd_path: str = "../ssd"
         self.help_information = [
             "Available commands:",
             "  write <LBA> <value>  - Write value to the specified LBA",
@@ -110,14 +110,19 @@ class Shell:
             elif inputs[0] == "fullread":
                 self.fullread()
 
-    def write(self, address: int, data: str) -> None:
-        subprocess.run(["python", "../ssd/virtual_ssd.py", "W", str(address), data])
+    def write(self, address: str, data: str) -> None:
+        subprocess.run(
+            ["python", f"{self.ssd_path}/virtual_ssd.py", "W", address, data]
+        )
 
-    def read(self, address: int) -> None:
-        subprocess.run(["python", "../ssd/virtual_ssd.py", "R", str(address)])
-        with open("result.txt", "r") as file:
-            file_contents = file.read()
-        print(file_contents)
+    def read(self, address: str) -> None:
+        subprocess.run(["python", f"{self.ssd_path}/virtual_ssd.py", "R", address])
+        try:
+            with open(f"{self.ssd_path}/result.txt", "r") as file:
+                file_contents = file.read()
+                print(file_contents)
+        except FileNotFoundError:
+            print("파일이 존재하지 않습니다.")
 
     def exit(self) -> None:
         self.is_run = False
@@ -128,11 +133,11 @@ class Shell:
 
     def fullwrite(self, data: str) -> None:
         for i in range(100):
-            self.ssd.write(i, data)
+            self.write(str(i), data)
 
     def fullread(self) -> None:
         for i in range(100):
-            self.read(i)
+            self.read(str(i))
 
 
 if __name__ == "__main__":

@@ -78,7 +78,7 @@ class TestShell(TestCase):
 
     @patch("subprocess.run")
     def test_write_command(self, mock_subprocess_run):
-        address = 3
+        address = "3"
         data = "0x1298CDEF"
         self.shell.write(address, data)
         mock_subprocess_run.assert_called_with(
@@ -88,16 +88,16 @@ class TestShell(TestCase):
     @patch("subprocess.run")
     @patch("builtins.open", new_callable=mock_open, read_data="1")
     def test_read_command(self, mock_open, mock_subprocess_run):
-        address = 3
+        address = "3"
 
         mock_open.return_value.read.return_value = "0x1298CDEF"
 
         with patch("builtins.print") as mock_print:
             self.shell.read(address)
             mock_subprocess_run.assert_called_with(
-                ["python", "../ssd/virtual_ssd.py", "R", str(address)]
+                ["python", "../ssd/virtual_ssd.py", "R", address]
             )
-            mock_open.assert_called_with("result.txt", "r")
+            mock_open.assert_called_with("../ssd/result.txt", "r")
             mock_open.return_value.read.assert_called_once()
             mock_print.assert_called_with("0x1298CDEF")
 
@@ -128,20 +128,16 @@ class TestShell(TestCase):
                 "  help                 - Show this help message"
             )
 
-    @patch("builtins.input", side_effect=["fullwrite 0xABCDFFFF", "exit"])
-    @patch.object(VirtualSSD, "write")
-    def test_fullwrite_command(self, mock_write, mock_input):
-        self.shell.run()
-        self.assertEqual(mock_write.call_count, 100)
-        mock_write.assert_any_call(0, "0xABCDFFFF")
-        mock_write.assert_any_call(99, "0xABCDFFFF")
+    @patch("subprocess.run")
+    def test_fullwrite_command(self, mock_subprocess_run):
+        self.shell.fullwrite("0xABCDFFFF")
+        self.assertEqual(mock_subprocess_run.call_count, 100)
 
     @patch("builtins.input", side_effect=["fullread", "exit"])
-    @patch.object(VirtualSSD, "read", return_value="0x1298CDEF")
-    def test_fullread_command(self, mock_read, mock_input):
+    @patch("builtins.open", new_callable=mock_open, read_data="1")
+    @patch("subprocess.run")
+    def test_fullread_command(self, mock_subprocess_run, mock_open, mock_input):
         with patch("builtins.print") as mock_print:
             self.shell.run()
-            self.assertEqual(mock_read.call_count, 100)
-            mock_read.assert_any_call(0)
-            mock_read.assert_any_call(99)
-            mock_print.assert_any_call("0x1298CDEF")
+            self.assertEqual(mock_subprocess_run.call_count, 100)
+            self.assertEqual(mock_open.call_count, 100)
