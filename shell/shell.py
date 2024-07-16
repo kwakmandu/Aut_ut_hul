@@ -146,8 +146,10 @@ class Shell:
             result_contents = self.read_test_result(result_file)
 
             if captured_output == result_contents:
+                print(f"pass {test_file}")
                 return True
             else:
+                print(f"fail {test_file}")
                 return False
 
     def read_test_result(self, file_path) -> str:
