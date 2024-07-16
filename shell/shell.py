@@ -11,7 +11,7 @@ ALLOWED_INITIAL_COMMANDS = [
     "fullread",
     "testapp1",
     "testapp2",
-]  # test 명령어 추가 필요
+]
 
 
 class Shell:
