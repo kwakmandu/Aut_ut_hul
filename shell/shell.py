@@ -1,5 +1,5 @@
-import contextlib
 import io
+import contextlib
 import subprocess
 import sys
 from helper import Helper
@@ -23,7 +23,16 @@ class Shell:
         self.is_run = False
         self.ssd_path: str = "../ssd"
         self.test_script_path: str = "../testscript"
-        self.helper: Helper = Helper()
+        self.help_information = [
+            "Available commands:",
+            "  write <LBA> <value>  - Write value to the specified LBA",
+            "  read <LBA>           - Read value from the specified LBA",
+            "  fullwrite <value>    - Write value to all LBAs",
+            "  fullread             - Read values from all LBAs",
+            "  exit                 - Exit the shell",
+            "  help                 - Show this help message",
+        ]
+        self.helper = Helper()
 
     def is_valid_command(self, inputs: list[str]) -> bool:
         if inputs[0] not in ALLOWED_INITIAL_COMMANDS:
@@ -130,7 +139,7 @@ class Shell:
         else:
             print("INVALID COMMAND")
 
-    def run_test(self, test_file, result_file) -> bool:
+    def run_test(self, test_file: str, result_file: str) -> bool:
         with open(test_file, "r", encoding="utf-8") as file:
             output = io.StringIO()
             with contextlib.redirect_stdout(output):
