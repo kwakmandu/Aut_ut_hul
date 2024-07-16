@@ -1,3 +1,7 @@
+from ssd.storage_device_interface import StorageDeviceInterface
+from ssd.virtual_ssd import VirtualSSD
+
+
 class Validate:
     def is_valid_data(self) -> None:
         pass
@@ -12,17 +16,17 @@ class Validate:
 class Shell:
 
     def __init__(self) -> None:
-        pass
+        self.ssd: StorageDeviceInterface = VirtualSSD()
 
     def run(self) -> None:
 
         while True:
             inputs = input().split(" ")
             if inputs[0] == "ssd" and inputs[1] == "W":
-                self.write(inputs[2], inputs[3])
+                self.write(int(inputs[2]), inputs[3])
 
             if inputs[0] == "ssd" and inputs[1] == "R":
-                self.read(inputs[2])
+                self.read(int(inputs[2]))
 
             elif inputs[0] == "exit":
                 break
@@ -36,11 +40,11 @@ class Shell:
             elif inputs[0] == "fullread":
                 pass
 
-    def write(self, address: str, data: str) -> None:
-        pass
+    def write(self, address: int, data: str) -> None:
+        self.ssd.write(address, data)
 
-    def read(self, address: str) -> None:
-        pass
+    def read(self, address: int) -> None:
+        print(self.ssd.read(address))
 
     def exit(self) -> None:
         pass
