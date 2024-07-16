@@ -28,11 +28,13 @@ class Test(TestCase):
         # act
         ssd.read(addr_will_be_read)
 
-        # result.csv read
-        actual = pd.read_csv(ssd.result_path)
+        # result.txt read
+        file_path = "result.txt"
+        with open(file_path, "r", encoding="utf-8") as file:
+            actual = file.readline().strip()
 
         # assert
-        self.assertEqual(data_init_value, actual.loc[0, "Data"])
+        self.assertEqual(data_init_value, actual)
 
     def test_virtual_ssd_read_case_적은곳(self) -> None:
         # arrange
@@ -45,7 +47,9 @@ class Test(TestCase):
         ssd.read(addr_will_be_write_read)
 
         # result.csv read
-        actual = pd.read_csv(ssd.result_path)
+        file_path = "result.txt"
+        with open(file_path, "r", encoding="utf-8") as file:
+            actual = file.readline().strip()
 
         # assert
-        self.assertEqual(data_will_be_write, actual.loc[0, "Data"])
+        self.assertEqual(data_will_be_write, actual)
