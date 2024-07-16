@@ -29,8 +29,6 @@ class Shell:
         if inputs[0] not in ALLOWED_INITIAL_COMMANDS:
             return False
 
-        if len(inputs) == 1:
-            return True
         # write
         if inputs[0] == "write":
             return (
