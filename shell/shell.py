@@ -85,7 +85,7 @@ class Shell:
 
     def select_commands(self, inputs: list[str]) -> None:
         if inputs[0] == "write":
-            self.write(int(inputs[1]), inputs[2])
+            self.write(inputs[1], inputs[2])
 
         elif inputs[0] == "read":
             self.read(int(inputs[1]))
