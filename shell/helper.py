@@ -1,5 +1,5 @@
 class Helper:
-    def __init__(self):
+    def __init__(self) -> None:
         self.__help_information = [
             "Available commands:",
             "  write <LBA> <value>  - Write value to the specified LBA",
@@ -10,5 +10,5 @@ class Helper:
             "  help                 - Show this help message",
         ]
 
-    def get_help_information(self):
+    def get_help_information(self) -> list[str]:
         return self.__help_information

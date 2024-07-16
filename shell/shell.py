@@ -31,51 +31,38 @@ class Shell:
             "  help                 - Show this help message",
         ]
         self.helper = Helper()
+        self.helper: Helper = Helper()
 
-    def is_valid_command(self, inputs: list) -> bool:
+    def is_valid_command(self, inputs: list[str]) -> bool:
         if inputs[0] not in ALLOWED_INITIAL_COMMANDS:
             return False
 
-        if len(inputs) == 1:
-            return True
         # write
         if inputs[0] == "write":
-            if not inputs[1].isdigit():
-                return False
-
-            if not 0 <= int(inputs[1]) <= 99:
-                return False
-
-            if len(inputs[2]) != 10:
-                return False
-
-            if inputs[2][:2] != "0x":
-                return False
-
-            for char in inputs[2][2:]:
-                if not (("0" <= char <= "9") or ("A" <= char <= "F")):
-                    return False
+            return (
+                len(inputs) == 3
+                and self.__is_valid_address(inputs[1])
+                and self.__is_valid_hex(inputs[2])
+            )
 
         elif inputs[0] == "read":
-            if not inputs[1].isdigit():
-                return False
-
-            if not 0 <= int(inputs[1]) <= 99:
-                return False
+            return len(inputs) == 2 and self.__is_valid_address(inputs[1])
 
         elif inputs[0] == "fullwrite":
+            return len(inputs) == 2 and self.__is_valid_hex(inputs[1])
 
-            if len(inputs[1]) != 10:
-                return False
+        elif len(inputs) == 1:
+            return True
 
-            if inputs[1][:2] != "0x":
-                return False
+        return False
 
-            for char in inputs[1][2:]:
-                if not (("0" <= char <= "9") or ("A" <= char <= "F")):
-                    return False
+    def __is_valid_address(self, value: str) -> bool:
+        return value.isdigit() and 0 <= int(value) <= 99
 
-        return True
+    def __is_valid_hex(self, value: str) -> bool:
+        if len(value) != 10 or value[:2] != "0x":
+            return False
+        return all(char in "0123456789ABCDEF" for char in value[2:])
 
     def run(self) -> None:
         self.is_run = True
@@ -87,26 +74,24 @@ class Shell:
             self.select_commands(inputs)
 
     def select_commands(self, inputs: list[str]) -> None:
-        if inputs[0] == "write":
-            self.write(inputs[1], inputs[2])
+        if len(inputs) < 1:
+            return
 
-        elif inputs[0] == "read":
-            self.read(inputs[1])
-
-        elif inputs[0] == "exit":
-            self.exit()
-
-        elif inputs[0] == "help":
-            self.help()
-
-        elif inputs[0] == "fullwrite":
-            self.fullwrite(inputs[1])
-
-        elif inputs[0] == "fullread":
-            self.fullread()
-
-        else:
-            self.run_testscript(inputs[0])
+        match inputs[0]:
+            case "write":
+                self.write(inputs[1], inputs[2])
+            case "read":
+                self.read(inputs[1])
+            case "exit":
+                self.exit()
+            case "help":
+                self.help()
+            case "fullwrite":
+                self.fullwrite(inputs[1])
+            case "fullread":
+                self.fullread()
+            case _:
+                self.run_testscript(inputs[0])
 
     def write(self, address: str, data: str) -> None:
         subprocess.run(
@@ -139,7 +124,7 @@ class Shell:
         for i in range(100):
             self.read(str(i))
 
-    def run_testscript(self, testcase) -> None:
+    def run_testscript(self, testcase: str) -> None:
         if testcase == "testapp1":
             self.run_test(f"{self.test_script_path}/TestApp01.txt")
         elif testcase == "testapp2":
@@ -147,7 +132,7 @@ class Shell:
         else:
             print("INVALID COMMAND")
 
-    def run_test(self, test_file):
+    def run_test(self, test_file: str) -> None:
         with open(test_file, "r", encoding="utf-8") as file:
             # 파일을 한 줄씩 읽기
             for line in file:
