@@ -5,13 +5,12 @@ import pandas as pd
 import os
 
 INIT_VALUE = "0x00000000"
-os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 
 class VirtualSSD(StorageDeviceInterface):
-    def __init__(self) -> None:
+    def __init__(self):
         self.nand_path = "nand.csv"
-        self.result_path = "result.txt"
+        self.result_path = "result.csv"
 
         if not os.path.exists(self.nand_path):
             self.nand_df = pd.DataFrame(
@@ -30,20 +29,8 @@ class VirtualSSD(StorageDeviceInterface):
         self.nand_df = pd.read_csv(self.nand_path)
         if os.path.exists(self.result_path):
             os.remove(self.result_path)
-
         result_df = pd.DataFrame(
             data=[self.nand_df.loc[address, "Data"]], columns=["Data"]
         )
         result_df = result_df.replace("\n", "")
-
-        with open(self.result_path, "w", encoding="utf-8") as file:
-            file.write(result_df.loc[0, "Data"])
-
-
-if __name__ == "__main__":
-    ssd = VirtualSSD()
-    cmd, address, value = sys.argv[1:]
-    if cmd == "W":
-        ssd.write(int(address), value)
-    elif cmd == "R":
-        ssd.read(int(address))
+        result_df.to_csv(self.result_path, index_label="index")
