@@ -90,23 +90,28 @@ class Shell:
             if not self.is_valid_command(inputs):
                 print("INVALID COMMAND")
                 continue
-            if inputs[0] == "ssd" and inputs[1] == "W":
-                self.write(int(inputs[2]), inputs[3])
+            self.is_run = self.select_commands(inputs)
 
-            if inputs[0] == "ssd" and inputs[1] == "R":
-                self.read(int(inputs[2]))
+    def select_commands(self, inputs) -> bool:
+        if inputs[0] == "ssd" and inputs[1] == "W":
+            self.write(int(inputs[2]), inputs[3])
+        if inputs[0] == "ssd" and inputs[1] == "R":
+            self.read(int(inputs[2]))
 
-            elif inputs[0] == "exit":
-                self.exit()
+        elif inputs[0] == "exit":
+            self.exit()
 
-            elif inputs[0] == "help":
-                self.help()
+        elif inputs[0] == "help":
+            self.help()
 
-            elif inputs[0] == "fullwrite":
-                self.fullwrite(inputs[1])
+        elif inputs[0] == "fullwrite":
+            self.fullwrite(inputs[1])
 
-            elif inputs[0] == "fullread":
-                self.fullread()
+        elif inputs[0] == "fullread":
+            self.fullread()
+
+        else:
+            self.run_testscript(inputs[0])
 
     def write(self, address: str, data: str) -> None:
         subprocess.run(
@@ -138,6 +143,21 @@ class Shell:
     def fullread(self) -> None:
         for i in range(100):
             self.read(str(i))
+
+    def run_testscript(self, testcase) -> None:
+        if testcase == "testapp1":
+            self.run_test("testscript/TestApp1.txt")
+        elif testcase == "testapp2":
+            self.run_test("testscript/TestApp2.txt")
+        else:
+            print("WRONG COMMAND")
+            self.exit()
+
+    def run_test(self, test_file):
+        with open(test_file, "r", encoding="utf-8") as file:
+            # 파일을 한 줄씩 읽기
+            for line in file:
+                self.select_commands(line.strip())
 
 
 if __name__ == "__main__":
