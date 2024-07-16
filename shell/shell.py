@@ -18,6 +18,15 @@ class Shell:
     def __init__(self) -> None:
         self.is_run = False
         self.ssd: StorageDeviceInterface = VirtualSSD()
+        self.help_information = [
+            "Available commands:",
+            "  write <LBA> <value>  - Write value to the specified LBA",
+            "  read <LBA>           - Read value from the specified LBA",
+            "  fullwrite <value>    - Write value to all LBAs",
+            "  fullread             - Read values from all LBAs",
+            "  exit                 - Exit the shell",
+            "  help                 - Show this help message",
+        ]
 
     def run(self) -> None:
         self.is_run = True
@@ -33,7 +42,7 @@ class Shell:
                 self.exit()
 
             elif inputs[0] == "help":
-                pass
+                self.help()
 
             elif inputs[0] == "fullwrite":
                 pass
@@ -51,7 +60,8 @@ class Shell:
         self.is_run = False
 
     def help(self) -> None:
-        pass
+        for h_info in self.help_information:
+            print(h_info)
 
     def fullwrite(self) -> None:
         pass

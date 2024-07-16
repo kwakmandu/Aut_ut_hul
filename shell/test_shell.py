@@ -29,7 +29,6 @@ class TestShell(TestCase):
         self.shell.run()
         self.assertFalse(self.shell.is_run)
 
-    @skip
     @patch("builtins.input", side_effect=["help", "exit"])
     def test_help_command(self, mock_input):
         with patch("builtins.print") as mock_print:
