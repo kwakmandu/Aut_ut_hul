@@ -31,8 +31,6 @@ class Shell:
         if inputs[0] not in ALLOWED_INITIAL_COMMANDS:
             return False
 
-        if len(inputs) == 1:
-            return True
         # write
         if inputs[0] == "write":
             return (
@@ -152,7 +150,7 @@ class Shell:
                 print(f"fail {test_file}")
                 return False
 
-    def read_test_result(self, file_path) -> str:
+    def read_test_result(self, file_path: str) -> str:
         """주어진 경로의 파일을 읽어 내용 반환"""
         with open(file_path, "r", encoding="utf-8") as file:
             return file.read()
