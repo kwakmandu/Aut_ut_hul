@@ -14,17 +14,6 @@ ALLOWED_INITIAL_COMMANDS = [
 ]  # test 명령어 추가 필요
 
 
-class Validate:
-    def is_valid_data(self) -> None:
-        pass
-
-    def is_valid_LBA_addr(self) -> None:
-        pass
-
-    def command_string_parser(self) -> None:
-        pass
-
-
 class Shell:
 
     def __init__(self) -> None:
