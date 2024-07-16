@@ -92,7 +92,7 @@ class Shell:
             if not self.is_valid_command(inputs):
                 print("INVALID COMMAND")
                 continue
-            self.is_run = self.select_commands(inputs)
+            self.select_commands(inputs)
 
     def select_commands(self, inputs) -> bool:
         if inputs[0] == "write":
