@@ -1,9 +1,11 @@
 import contextlib
 import io
+import os
 import subprocess
 import sys
 from helper import Helper
 
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 ALLOWED_INITIAL_COMMANDS = [
     "write",
