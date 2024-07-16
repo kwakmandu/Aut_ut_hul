@@ -12,7 +12,7 @@ ALLOWED_INITIAL_COMMANDS = [
     "fullread",
     "testapp1",
     "testapp2",
-]  # test 명령어 추가 필요
+]
 
 
 class Shell:
@@ -20,6 +20,16 @@ class Shell:
     def __init__(self) -> None:
         self.is_run = False
         self.ssd_path: str = "../ssd"
+        self.test_script_path: str = "../testscript"
+        self.help_information = [
+            "Available commands:",
+            "  write <LBA> <value>  - Write value to the specified LBA",
+            "  read <LBA>           - Read value from the specified LBA",
+            "  fullwrite <value>    - Write value to all LBAs",
+            "  fullread             - Read values from all LBAs",
+            "  exit                 - Exit the shell",
+            "  help                 - Show this help message",
+        ]
         self.helper = Helper()
 
     def is_valid_command(self, inputs: list) -> bool:
@@ -131,9 +141,9 @@ class Shell:
 
     def run_testscript(self, testcase) -> None:
         if testcase == "testapp1":
-            self.run_test("testscript/TestApp01.txt")
+            self.run_test(f"{self.test_script_path}/TestApp01.txt")
         elif testcase == "testapp2":
-            self.run_test("testscript/TestApp02.txt")
+            self.run_test(f"{self.test_script_path}/TestApp02.txt")
         else:
             print("INVALID COMMAND")
 
@@ -141,7 +151,7 @@ class Shell:
         with open(test_file, "r", encoding="utf-8") as file:
             # 파일을 한 줄씩 읽기
             for line in file:
-                self.select_commands(line.strip())
+                self.select_commands(line.split(" "))
 
 
 if __name__ == "__main__":
