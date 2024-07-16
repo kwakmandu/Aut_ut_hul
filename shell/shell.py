@@ -16,11 +16,12 @@ class Validate:
 class Shell:
 
     def __init__(self) -> None:
+        self.is_run = False
         self.ssd: StorageDeviceInterface = VirtualSSD()
 
     def run(self) -> None:
-
-        while True:
+        self.is_run = True
+        while self.is_run:
             inputs = input().split(" ")
             if inputs[0] == "ssd" and inputs[1] == "W":
                 self.write(int(inputs[2]), inputs[3])
@@ -29,7 +30,7 @@ class Shell:
                 self.read(int(inputs[2]))
 
             elif inputs[0] == "exit":
-                break
+                self.exit()
 
             elif inputs[0] == "help":
                 pass
@@ -47,7 +48,7 @@ class Shell:
         print(self.ssd.read(address))
 
     def exit(self) -> None:
-        pass
+        self.is_run = False
 
     def help(self) -> None:
         pass

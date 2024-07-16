@@ -24,7 +24,6 @@ class TestShell(TestCase):
             mock_read.assert_called_with("3")
             mock_print.assert_any_call("0x1298CDEF")
 
-    @skip
     @patch("builtins.input", side_effect=["exit"])
     def test_exit(self, mock_input):
         self.shell.run()
