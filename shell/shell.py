@@ -1,5 +1,6 @@
 import subprocess
 import sys
+from helper import Helper
 
 
 ALLOWED_INITIAL_COMMANDS = [
@@ -19,15 +20,7 @@ class Shell:
     def __init__(self) -> None:
         self.is_run = False
         self.ssd_path: str = "../ssd"
-        self.help_information = [
-            "Available commands:",
-            "  write <LBA> <value>  - Write value to the specified LBA",
-            "  read <LBA>           - Read value from the specified LBA",
-            "  fullwrite <value>    - Write value to all LBAs",
-            "  fullread             - Read values from all LBAs",
-            "  exit                 - Exit the shell",
-            "  help                 - Show this help message",
-        ]
+        self.helper = Helper()
 
     def is_valid_command(self, inputs: list) -> bool:
         if inputs[0] not in ALLOWED_INITIAL_COMMANDS:
@@ -125,7 +118,7 @@ class Shell:
         self.is_run = False
 
     def help(self) -> None:
-        for h_info in self.help_information:
+        for h_info in self.helper.get_help_information():
             print(h_info)
 
     def fullwrite(self, data: str) -> None:
