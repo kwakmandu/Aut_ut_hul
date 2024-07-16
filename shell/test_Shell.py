@@ -1,7 +1,7 @@
 from unittest import TestCase, skip
 from unittest.mock import patch
 
-from Shell.shell import Shell
+from shell import Shell
 
 
 class TestShell(TestCase):
