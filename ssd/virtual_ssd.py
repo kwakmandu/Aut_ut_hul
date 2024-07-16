@@ -1,6 +1,6 @@
 import sys
 
-from ssd.storage_device_interface import StorageDeviceInterface
+from storage_device_interface import StorageDeviceInterface
 import pandas as pd
 import os
 

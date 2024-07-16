@@ -1,6 +1,9 @@
 import subprocess
 import sys
 from helper import Helper
+import os
+
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 
 ALLOWED_INITIAL_COMMANDS = [
@@ -116,9 +119,9 @@ class Shell:
 
     def run_testscript(self, testcase: str) -> None:
         if testcase == "testapp1":
-            self.run_test(f"{self.test_script_path}/TestApp01.txt")
+            self.run_test(f"{self.test_script_path}/testapp01.txt")
         elif testcase == "testapp2":
-            self.run_test(f"{self.test_script_path}/TestApp02.txt")
+            self.run_test(f"{self.test_script_path}/testapp02.txt")
         else:
             print("INVALID COMMAND")
 

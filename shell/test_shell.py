@@ -1,9 +1,8 @@
 import sys
-from unittest import TestCase, skip, mock
-from unittest.mock import Mock, patch, MagicMock, mock_open
+from unittest import TestCase
+from unittest.mock import patch, mock_open
 
 from shell import Shell
-from ssd.virtual_ssd import VirtualSSD
 
 
 class TestShell(TestCase):
