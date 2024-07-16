@@ -1,4 +1,3 @@
-from block.block_4byte import Block4Byte
 from ssd.storage_device_interface import StorageDeviceInterface
 import pandas as pd
 import os
@@ -8,8 +7,8 @@ INIT_VALUE = "0x00000000"
 
 class VirtualSSD(StorageDeviceInterface):
     def __init__(self):
-        self.nand_path = "ssd/nand.csv"
-        self.result_path = "ssd/result.csv"
+        self.nand_path = "nand.csv"
+        self.result_path = "result.csv"
 
         if not os.path.exists(self.nand_path):
             self.nand_df = pd.DataFrame(
