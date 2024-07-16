@@ -1,5 +1,5 @@
 from unittest import TestCase
-from virtual_ssd import VirtualSSD
+from ssd.virtual_ssd import VirtualSSD
 
 
 class Test(TestCase):
