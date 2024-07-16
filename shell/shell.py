@@ -9,7 +9,15 @@ ALLOWED_INITIAL_COMMANDS = [
     "help",
     "fullwrite",
     "fullread",
+    "testapp1",
+    "testapp2",
 ]  # test 명령어 추가 필요
+
+import sys
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+SCRIPT_DIR = BASE_DIR / "script"
 
 
 class Validate:
@@ -85,28 +93,30 @@ class Shell:
 
     def run(self) -> None:
         self.is_run = True
+        original_stdin = None
         while self.is_run:
             inputs = input().split(" ")
             if not self.is_valid_command(inputs):
                 print("INVALID COMMAND")
                 continue
-            if inputs[0] == "ssd" and inputs[1] == "W":
-                self.write(int(inputs[2]), inputs[3])
-
-            if inputs[0] == "ssd" and inputs[1] == "R":
-                self.read(int(inputs[2]))
-
+            if inputs[0] == "write":
+                self.write(inputs[1], inputs[2])
+            if inputs[0] == "read":
+                self.read(inputs[1])
             elif inputs[0] == "exit":
                 self.exit()
-
+                sys.stdin = original_stdin
+                original_stdin = None
             elif inputs[0] == "help":
                 self.help()
-
             elif inputs[0] == "fullwrite":
                 self.fullwrite(inputs[1])
 
             elif inputs[0] == "fullread":
                 self.fullread()
+            elif inputs[0] in self.is_script():
+                original_stdin = sys.stdin
+                sys.stdin = open(SCRIPT_DIR / inputs[0], "r")
 
     def write(self, address: str, data: str) -> None:
         subprocess.run(
@@ -138,6 +148,12 @@ class Shell:
     def fullread(self) -> None:
         for i in range(100):
             self.read(str(i))
+
+    def is_script(self):
+        file_names_without_extension = [
+            file.stem for file in SCRIPT_DIR.glob("*") if file.is_file()
+        ]
+        return file_names_without_extension
 
 
 if __name__ == "__main__":

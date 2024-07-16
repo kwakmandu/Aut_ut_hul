@@ -1,0 +1,3 @@
+fullwrite 0x01234567
+fullread
+exit

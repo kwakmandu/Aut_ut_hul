@@ -96,7 +96,11 @@ class TestShell(TestCase):
         with patch("builtins.print") as mock_print:
             self.shell.read(address)
             mock_subprocess_run.assert_called_with(
+<<<<<<< Updated upstream
                 [sys.executable, "../ssd/virtual_ssd.py", "R", address]
+=======
+                ["python", "../ssd/virtual_ssd.py", "R", address]
+>>>>>>> Stashed changes
             )
             mock_open.assert_called_with("../ssd/result.txt", "r")
             mock_open.return_value.read.assert_called_once()

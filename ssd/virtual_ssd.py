@@ -4,6 +4,14 @@ from ssd.storage_device_interface import StorageDeviceInterface
 import pandas as pd
 import os
 
+import sys
+
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+SCRIPT_DIR = BASE_DIR / "script"
+
+
 INIT_VALUE = "0x00000000"
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
