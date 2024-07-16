@@ -10,6 +10,72 @@ class TestShell(TestCase):
     def setUp(self):
         self.shell = Shell()
 
+    @patch("builtins.input", side_effect=["Write 3 0x1298CDEF", "exit"])
+    def test_invalid_command_not_allowed_initial_command(self, mock_input):
+        with patch("builtins.print") as mock_print:
+            self.shell.run()
+            mock_print.assert_any_call("INVALID COMMAND")
+
+    @patch("builtins.input", side_effect=["W X 0x1298CDEF", "exit"])
+    def test_invalid_write_command_address_not_numerical(self, mock_input):
+        with patch("builtins.print") as mock_print:
+            self.shell.run()
+            mock_print.assert_any_call("INVALID COMMAND")
+
+    @patch("builtins.input", side_effect=["R X", "exit"])
+    def test_invalid_read_command_address_not_numerical(self, mock_input):
+        with patch("builtins.print") as mock_print:
+            self.shell.run()
+            mock_print.assert_any_call("INVALID COMMAND")
+
+    @patch("builtins.input", side_effect=["W 100 0x1298CDEF", "exit"])
+    def test_invalid_write_command_address_not_in_range(self, mock_input):
+        with patch("builtins.print") as mock_print:
+            self.shell.run()
+            mock_print.assert_any_call("INVALID COMMAND")
+
+    @patch("builtins.input", side_effect=["R 100", "exit"])
+    def test_invalid_read_command_address_not_in_range(self, mock_input):
+        with patch("builtins.print") as mock_print:
+            self.shell.run()
+            mock_print.assert_any_call("INVALID COMMAND")
+
+    @patch("builtins.input", side_effect=["W 0 1x1298CDEF", "exit"])
+    def test_invalid_write_command_data_initial_not_0x(self, mock_input):
+        with patch("builtins.print") as mock_print:
+            self.shell.run()
+            mock_print.assert_any_call("INVALID COMMAND")
+
+    @patch("builtins.input", side_effect=["W 0 0x1298CDEF0", "exit"])
+    def test_invalid_write_command_data_length_not_10(self, mock_input):
+        with patch("builtins.print") as mock_print:
+            self.shell.run()
+            mock_print.assert_any_call("INVALID COMMAND")
+
+    @patch("builtins.input", side_effect=["W 0 0x1298CDEX", "exit"])
+    def test_invalid_write_command_data_not_in_hex_range(self, mock_input):
+        with patch("builtins.print") as mock_print:
+            self.shell.run()
+            mock_print.assert_any_call("INVALID COMMAND")
+
+    @patch("builtins.input", side_effect=["fullwrite 1x1298CDEF", "exit"])
+    def test_invalid_fullwrite_command_data_initial_not_0x(self, mock_input):
+        with patch("builtins.print") as mock_print:
+            self.shell.run()
+            mock_print.assert_any_call("INVALID COMMAND")
+
+    @patch("builtins.input", side_effect=["fullwrite 0x1298CDEF0", "exit"])
+    def test_invalid_fullwrite_command_data_length_not_10(self, mock_input):
+        with patch("builtins.print") as mock_print:
+            self.shell.run()
+            mock_print.assert_any_call("INVALID COMMAND")
+
+    @patch("builtins.input", side_effect=["fullwrite 0x1298CDEX", "exit"])
+    def test_invalid_fullwrite_command_data_not_in_hex_range(self, mock_input):
+        with patch("builtins.print") as mock_print:
+            self.shell.run()
+            mock_print.assert_any_call("INVALID COMMAND")
+
     @patch("subprocess.run")
     def test_write_command(self, mock_subprocess_run):
         address = 3
