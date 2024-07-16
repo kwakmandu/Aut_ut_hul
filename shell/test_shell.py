@@ -67,3 +67,4 @@ class TestShell(TestCase):
             self.assertEqual(mock_read.call_count, 100)
             mock_read.assert_any_call(0)
             mock_read.assert_any_call(99)
+            mock_print.assert_any_call("0x1298CDEF")
