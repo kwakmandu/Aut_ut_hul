@@ -4,6 +4,16 @@ from ssd.storage_device_interface import StorageDeviceInterface
 from ssd.virtual_ssd import VirtualSSD
 
 
+ALLOWED_INITIAL_COMMANDS = [
+    "W",
+    "R",
+    "exit",
+    "help",
+    "fullwrite",
+    "fullread",
+]  # test 명령어 추가 필요
+
+
 class Validate:
     def is_valid_data(self) -> None:
         pass
@@ -30,10 +40,58 @@ class Shell:
             "  help                 - Show this help message",
         ]
 
+    def is_valid_command(self, inputs: list) -> bool:
+        if inputs[0] not in ALLOWED_INITIAL_COMMANDS:
+            return False
+
+        if len(inputs) == 1:
+            return True
+        # write
+        if inputs[0] == "W":
+            if not inputs[1].isdigit():
+                return False
+
+            if not 0 <= int(inputs[1]) <= 99:
+                return False
+
+            if len(inputs[2]) != 10:
+                return False
+
+            if inputs[2][:2] != "0x":
+                return False
+
+            for char in inputs[2][2:]:
+                if not (("0" <= char <= "9") or ("A" <= char <= "F")):
+                    return False
+
+        elif inputs[0] == "R":
+            if not inputs[1].isdigit():
+                return False
+
+            if not 0 <= int(inputs[1]) <= 99:
+                return False
+
+        elif inputs[0] == "fullwrite":
+
+            if len(inputs[1]) != 10:
+                return False
+
+            if inputs[1][:2] != "0x":
+                return False
+
+            for char in inputs[1][2:]:
+                if not (("0" <= char <= "9") or ("A" <= char <= "F")):
+                    return False
+
+        return True
+
     def run(self) -> None:
         self.is_run = True
         while self.is_run:
             inputs = input().split(" ")
+            if not self.is_valid_command(inputs):
+                print("INVALID COMMAND")
+                continue
             if inputs[0] == "ssd" and inputs[1] == "W":
                 self.write(int(inputs[2]), inputs[3])
 
