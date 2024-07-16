@@ -5,8 +5,8 @@ from ssd.virtual_ssd import VirtualSSD
 
 
 ALLOWED_INITIAL_COMMANDS = [
-    "W",
-    "R",
+    "write",
+    "read",
     "exit",
     "help",
     "fullwrite",
@@ -47,7 +47,7 @@ class Shell:
         if len(inputs) == 1:
             return True
         # write
-        if inputs[0] == "W":
+        if inputs[0] == "write":
             if not inputs[1].isdigit():
                 return False
 
@@ -64,7 +64,7 @@ class Shell:
                 if not (("0" <= char <= "9") or ("A" <= char <= "F")):
                     return False
 
-        elif inputs[0] == "R":
+        elif inputs[0] == "read":
             if not inputs[1].isdigit():
                 return False
 
