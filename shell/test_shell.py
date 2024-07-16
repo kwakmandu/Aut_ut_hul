@@ -154,3 +154,13 @@ class TestShell(TestCase):
             self.shell.run()
             self.assertEqual(mock_subprocess_run.call_count, 100)
             self.assertEqual(mock_open.call_count, 100)
+
+    @skip
+    @patch("builtins.input", side_effect=["testapp1", "exit"])
+    def test_test_app01_테스트(self, mock_input):
+        self.shell.run()
+
+    @skip
+    @patch("builtins.input", side_effect=["testapp2", "exit"])
+    def test_test_app02_테스트(self, mock_input):
+        self.shell.run()
