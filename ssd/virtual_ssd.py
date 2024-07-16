@@ -1,7 +1,7 @@
 import sys
 from typing import Optional
 
-from ssd.storage_device_interface import StorageDeviceInterface
+from storage_device_interface import StorageDeviceInterface
 import pandas as pd
 import os
 
