@@ -93,10 +93,11 @@ class Shell:
             self.is_run = self.select_commands(inputs)
 
     def select_commands(self, inputs) -> bool:
-        if inputs[0] == "ssd" and inputs[1] == "W":
-            self.write(int(inputs[2]), inputs[3])
-        if inputs[0] == "ssd" and inputs[1] == "R":
-            self.read(int(inputs[2]))
+        if inputs[0] == "write":
+            self.write(int(inputs[1]), inputs[2])
+
+        elif inputs[0] == "read":
+            self.read(int(inputs[1]))
 
         elif inputs[0] == "exit":
             self.exit()
