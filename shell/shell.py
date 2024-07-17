@@ -17,8 +17,6 @@ ALLOWED_INITIAL_COMMANDS = [
     "help",
     "fullwrite",
     "fullread",
-    "testapp1",
-    "testapp2",
 ]
 
 
@@ -119,7 +117,7 @@ class Shell:
             case "fullread":
                 self.fullread()
             case _:
-                self.run_testscript(inputs[0])
+                print("INVALID COMMAND")
 
     def write(self, address: str, data: str) -> None:
         self.logger.print(f"write {address} {data}")
@@ -176,21 +174,6 @@ class Shell:
         for i in range(100):
             self.read(str(i))
 
-    def run_testscript(self, testcase: str) -> None:
-        self.logger.print(f"run testscript {testcase}")
-        if testcase == "testapp1":
-            self.run_test(
-                f"{self.test_script_path}/TestApp01.txt",
-                f"{self.test_script_path}/TestAppResult01.txt",
-            )
-        elif testcase == "testapp2":
-            self.run_test(
-                f"{self.test_script_path}/TestApp02.txt",
-                f"{self.test_script_path}/TestAppResult02.txt",
-            )
-        else:
-            print("INVALID COMMAND")
-
     def run_test(self, test_file: str) -> str:
         with open(test_file, "r", encoding="utf-8") as file:
             output = io.StringIO()
@@ -211,7 +194,7 @@ class Shell:
 
         return output == result_contents
 
-    def run_script(self, script_list_file: str) -> None:
+    def run_testscript(self, script_list_file: str) -> None:
         # TODO(WontaeJeong): handle file exceptions
         with open(
             f"{self.test_script_path}/{script_list_file}", "r", encoding="utf-8"
@@ -240,7 +223,7 @@ if __name__ == "__main__":
         if len(args) == 0:
             shell.run()
         elif len(args) == 1:
-            shell.run_script(args[0])
+            shell.run_testscript(args[0])
         else:
             raise ValueError("This script accepts at most one argument.")
     except Exception as e:
