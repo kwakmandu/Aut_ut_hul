@@ -190,16 +190,14 @@ class Shell:
             return file.read()
 
     def compare_test_result(self, result_file: str, output: str) -> bool:
-        result_contents = self.read_test_result(result_file)
-
-        return output == result_contents
+        return output == self.read_test_result(result_file)
 
     def run_testscript(self, script_list_file: str) -> None:
         # TODO(WontaeJeong): handle file exceptions
-        with open(
-            f"{self.test_script_path}/{script_list_file}", "r", encoding="utf-8"
-        ) as file:
+        script_list_file_path = f"{self.test_script_path}/{script_list_file}"
+        with open(script_list_file_path, "r", encoding="utf-8") as file:
             for line in file:
+                # TODO(WontaeJeong): handle line format exceptions
                 test_file, result_file = line.rstrip().split(" ")
                 test_file_path, result_file_path = (
                     f"{self.test_script_path}/{test_file}",
