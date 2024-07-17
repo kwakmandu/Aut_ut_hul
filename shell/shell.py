@@ -5,6 +5,7 @@ import subprocess
 import sys
 from helper import Helper
 from logger.logger import Logger
+import re
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
@@ -24,8 +25,8 @@ class Shell:
 
     def __init__(self) -> None:
         self.is_run = False
-        self.ssd_path: str = "../ssd"
-        self.test_script_path: str = "../testscript"
+        self.ssd_dir: str = "../ssd"
+        self.test_script_dir: str = "../testscript"
         self.helper: Helper = Helper()
         self.logger: Logger = Logger()
 
@@ -122,16 +123,14 @@ class Shell:
     def write(self, address: str, data: str) -> None:
         self.logger.print(f"write {address} {data}")
         subprocess.run(
-            [sys.executable, f"{self.ssd_path}/virtual_ssd.py", "W", address, data]
+            [sys.executable, f"{self.ssd_dir}/virtual_ssd.py", "W", address, data]
         )
 
     def read(self, address: str) -> None:
         self.logger.print(f"read {address}")
-        subprocess.run(
-            [sys.executable, f"{self.ssd_path}/virtual_ssd.py", "R", address]
-        )
+        subprocess.run([sys.executable, f"{self.ssd_dir}/virtual_ssd.py", "R", address])
         try:
-            with open(f"{self.ssd_path}/result.txt", "r") as file:
+            with open(f"{self.ssd_dir}/result.txt", "r") as file:
                 file_contents = file.read().strip()
                 print(file_contents)
         except FileNotFoundError:
@@ -142,13 +141,13 @@ class Shell:
         isize = int(size)
         while isize > 10:
             subprocess.run(
-                [sys.executable, f"{self.ssd_path}/virtual_ssd.py", "E", address, "10"]
+                [sys.executable, f"{self.ssd_dir}/virtual_ssd.py", "E", address, "10"]
             )
             isize -= 10
         subprocess.run(
             [
                 sys.executable,
-                f"{self.ssd_path}/virtual_ssd.py",
+                f"{self.ssd_dir}/virtual_ssd.py",
                 "E",
                 address,
                 str(isize),
@@ -193,17 +192,19 @@ class Shell:
     def compare_test_result(self, result_file: str, output: str) -> bool:
         return output == self.read_test_result(result_file)
 
-    def run_testscript(self, script_list_file: str) -> None:
-        # TODO(WontaeJeong): handle file exceptions
+    def run_test_list(self, script_list_file: str) -> None:
+        if not self.__is_valid_script_list_file(script_list_file):
+            self.logger.print(f"invalid testscript list: {script_list_file}")
+            exit(1)
+
         self.logger.print(f"run testscript {script_list_file}")
-        script_list_file_path = f"{self.test_script_path}/{script_list_file}"
+        script_list_file_path = f"{self.test_script_dir}/{script_list_file}"
         with open(script_list_file_path, "r", encoding="utf-8") as file:
             for line in file:
-                # TODO(WontaeJeong): handle line format exceptions
                 test_file, result_file = line.rstrip().split(" ")
                 test_file_path, result_file_path = (
-                    f"{self.test_script_path}/{test_file}",
-                    f"{self.test_script_path}/{result_file}",
+                    f"{self.test_script_dir}/{test_file}",
+                    f"{self.test_script_dir}/{result_file}",
                 )
                 print(f"{test_file} --- Run...", end="")
 
@@ -214,6 +215,57 @@ class Shell:
                     print("Fail")
                     exit(1)
 
+    def __is_valid_script_list_file(self, script_list_file: str) -> bool:
+        script_list_file_path = f"{self.test_script_dir}/{script_list_file}"
+        if not os.path.exists(script_list_file_path):
+            print(f"file {script_list_file} was not found.")
+            return False
+
+        with open(script_list_file_path, "r", encoding="utf-8") as file:
+            for line_num, line in enumerate(file, start=1):
+                if not self.__is_valid_script_list_line(
+                    line, line_num, script_list_file
+                ):
+                    return False
+        return True
+
+    def __is_valid_script_list_line(
+        self, line: str, line_num: int, script_list_file: str
+    ) -> bool:
+        if not re.match(r"^\S+\.txt \S+\.txt$", line.strip()):
+            print(f"{script_list_file}:{line_num}: line does not match '*.txt *.txt'.")
+            return False
+
+        file1, file2 = line.split()
+        file1_path = f"{self.test_script_dir}/{file1}"
+        file2_path = f"{self.test_script_dir}/{file2}"
+
+        if not os.path.exists(file1_path):
+            print(f"{script_list_file}:{line_num}: file {file1} does not exist.")
+            return False
+        if not self.__is_valid_script_file(file1):
+            return False
+
+        if not os.path.exists(file2_path):
+            print(f"{script_list_file}:{line_num}: file {file2} does not exist.")
+            return False
+        if not self.__is_valid_script_file(file2):
+            return False
+        return True
+
+    def __is_valid_script_file(self, script_file: str) -> bool:
+        script_file_path = f"{self.test_script_dir}/{script_file}"
+
+        with open(script_file_path, "r", encoding="utf-8") as file:
+            for line_num, line in enumerate(file, start=1):
+                if not self.is_valid_command(line.strip().split()):
+                    print(
+                        f"{script_file}:{line_num}: {line.strip()} is invalid command"
+                    )
+                    return False
+
+        return True
+
 
 if __name__ == "__main__":
     try:
@@ -223,7 +275,7 @@ if __name__ == "__main__":
         if len(args) == 0:
             shell.run()
         elif len(args) == 1:
-            shell.run_testscript(args[0])
+            shell.run_test_list(args[0])
         else:
             raise ValueError("This script accepts at most one argument.")
     except Exception as e:
