@@ -1,6 +1,7 @@
 import sys
 from typing import Optional
 
+from logger.logger import Logger
 from storage_device_interface import StorageDeviceInterface
 import pandas as pd
 import os
@@ -11,6 +12,7 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 class VirtualSSD(StorageDeviceInterface):
     def __init__(self) -> None:
+        self.logger = Logger()
         self.nand_path = "nand.csv"
         self.result_path = "result.txt"
 
@@ -27,6 +29,7 @@ class VirtualSSD(StorageDeviceInterface):
         if os.path.exists(self.nand_path):
             os.remove(self.nand_path)
         self.nand_df["Data"].to_csv(self.nand_path, index_label="index")
+        self.logger.print("Data has been successfully written to the SSD.")
 
     def read(self, address: int) -> None:
         if os.path.exists(self.result_path):
@@ -39,12 +42,14 @@ class VirtualSSD(StorageDeviceInterface):
 
         with open(self.result_path, "w", encoding="utf-8") as file:
             file.write(str(result_df.loc[0, "Data"]))
+        self.logger.print("Data has been successfully read from the SSD.")
 
     def erase(self, address: int, size: int) -> None:
         self.nand_df.loc[address : address + size - 1, "Data"] = INIT_VALUE
         if os.path.exists(self.nand_path):
             os.remove(self.nand_path)
         self.nand_df["Data"].to_csv(self.nand_path, index_label="index")
+        self.logger.print("SSD has been successfully erased.")
 
 
 if __name__ == "__main__":
