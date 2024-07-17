@@ -175,6 +175,7 @@ class Shell:
             self.read(str(i))
 
     def run_test(self, test_file: str) -> str:
+        self.logger.print(f"run {test_file}")
         with open(test_file, "r", encoding="utf-8") as file:
             output = io.StringIO()
             with contextlib.redirect_stdout(output):
@@ -194,6 +195,7 @@ class Shell:
 
     def run_testscript(self, script_list_file: str) -> None:
         # TODO(WontaeJeong): handle file exceptions
+        self.logger.print(f"run testscript {script_list_file}")
         script_list_file_path = f"{self.test_script_path}/{script_list_file}"
         with open(script_list_file_path, "r", encoding="utf-8") as file:
             for line in file:
