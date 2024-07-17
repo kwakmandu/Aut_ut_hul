@@ -77,6 +77,7 @@ class VirtualSSD(StorageDeviceInterface):
                     )
                     self.logger.print("SSD has been successfully flushed.")
 
+        buffer.flush()
         if os.path.exists(self.nand_path):
             os.remove(self.nand_path)
         self.nand_df["Data"].to_csv(self.nand_path, index_label="index")
