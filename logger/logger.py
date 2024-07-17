@@ -4,7 +4,7 @@ from logging.handlers import RotatingFileHandler
 from datetime import datetime
 import inspect
 
-MAX_BYTE = 1024
+MAX_BYTE = 10240
 
 
 class SingletonMeta(type):
@@ -100,7 +100,7 @@ class Logger(metaclass=SingletonMeta):
 
         return "", "", ""
 
-    def log(self, message):
+    def print(self, message):
         """
         로그 메시지를 파일에 기록합니다.
         파일 크기가 제한을 초과하면 회전합니다.
@@ -111,7 +111,7 @@ class Logger(metaclass=SingletonMeta):
 
         module_name, function_name, class_name = self.get_caller_info()
 
-        extra = {"class.func": f"{class_name}.{function_name}"}
+        extra = {"class.func": f"{class_name}.{function_name}()"}
 
         self.logger.info(message, extra=extra)
         # print(f"[{module_name}] [{function_name}] [{class_name}] : {message}")
@@ -120,15 +120,15 @@ class Logger(metaclass=SingletonMeta):
 if __name__ == "__main__":
     # Logger 인스턴스 사용 예
     logger = Logger()
-    logger.log("This is a test log message.")
+    logger.print("This is a test log message.")
 
     # 추가 테스트를 위한 함수와 클래스
     def test_function():
-        logger.log("This is a log from test_function")
+        logger.print("This is a log from test_function")
 
     class TestClass:
         def test_method(self):
-            logger.log("This is a log from TestClass.test_method")
+            logger.print("This is a log from TestClass.test_method")
 
     test_function()
     TestClass().test_method()
