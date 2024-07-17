@@ -1,10 +1,8 @@
 import contextlib
 import io
 import os
-import subprocess
 import sys
 from commander.commander import Commander
-from helper import Helper
 from logger.logger import Logger
 import re
 
@@ -29,7 +27,6 @@ class Shell:
         self.ssd_dir: str = "../ssd"
         self.test_script_dir: str = "../testscript"
         self.commander: Commander = Commander()
-        self.helper: Helper = Helper()
         self.logger: Logger = Logger()
 
     def run(self) -> None:
@@ -39,96 +36,18 @@ class Shell:
         self.is_run = True
         while self.is_run:
             try:
-                user_input = input()
-                user_input_list = user_input.split(" ")
-                if not self.is_valid_command(user_input_list):
+                user_inputs = input().split()
+                if not self.commander.is_valid_command(user_inputs):
                     print("INVALID COMMAND")
-                    self.logger.print(f"INVALID COMMAND - {user_input}")
+                    self.logger.print(f"INVALID COMMAND - {" ".join(user_inputs)}")
                     continue
-                self.select_commands(user_input_list)
+                self.commander.execute_command(user_inputs)
 
             except Exception as e:
                 self.logger.print(e)
 
         self.logger.print("User IP:192.XX.XX.XX be disconnected")
         print("See you !")
-
-    def select_commands(self, inputs: list[str]) -> None:
-        if len(inputs) < 1:
-            return
-
-        match inputs[0]:
-            case "write":
-                self.write(inputs[1], inputs[2])
-            case "read":
-                self.read(inputs[1])
-            case "erase":
-                self.erase(inputs[1], inputs[2])
-            case "erase_range":
-                self.erase(inputs[1], inputs[2])
-            case "exit":
-                self.exit()
-            case "help":
-                self.help()
-            case "fullwrite":
-                self.fullwrite(inputs[1])
-            case "fullread":
-                self.fullread()
-            case _:
-                print("INVALID COMMAND")
-
-    def write(self, address: str, data: str) -> None:
-        self.logger.print(f"write {address} {data}")
-        subprocess.run(
-            [sys.executable, f"{self.ssd_dir}/virtual_ssd.py", "W", address, data]
-        )
-
-    def read(self, address: str) -> None:
-        self.logger.print(f"read {address}")
-        subprocess.run([sys.executable, f"{self.ssd_dir}/virtual_ssd.py", "R", address])
-        try:
-            with open(f"{self.ssd_dir}/result.txt", "r") as file:
-                file_contents = file.read().strip()
-                print(file_contents)
-        except FileNotFoundError:
-            print("파일이 존재하지 않습니다.")
-
-    def erase(self, address: str, size: str) -> None:
-        self.logger.print(f"erase {address} {size}")
-        isize = int(size)
-        while isize > 10:
-            subprocess.run(
-                [sys.executable, f"{self.ssd_dir}/virtual_ssd.py", "E", address, "10"]
-            )
-            isize -= 10
-        subprocess.run(
-            [
-                sys.executable,
-                f"{self.ssd_dir}/virtual_ssd.py",
-                "E",
-                address,
-                str(isize),
-            ]
-        )
-
-    def exit(self) -> None:
-        self.logger.print(f"exit")
-        self.is_run = False
-
-    def help(self) -> None:
-        self.logger.print(f"help")
-        for h_info in self.helper.get_help_information():
-            print(h_info)
-
-    def fullwrite(self, data: str) -> None:
-        self.logger.print(f"fullwrite {data}")
-        for i in range(100):
-            self.write(str(i), data)
-
-    def fullread(self) -> None:
-        self.logger.print(f"fullread")
-        for i in range(100):
-            self.read(str(i))
 
     def run_test(self, test_file: str) -> str:
         self.logger.print(f"run {test_file}")
@@ -137,7 +56,7 @@ class Shell:
             with contextlib.redirect_stdout(output):
                 # 파일을 한 줄씩 읽기
                 for line in file:
-                    self.select_commands(line.strip().split())
+                    self.commander.execute_command(line.strip().split())
 
             return output.getvalue()
 
@@ -211,7 +130,7 @@ class Shell:
 
         with open(test_file_path, "r", encoding="utf-8") as file:
             for line_num, line in enumerate(file, start=1):
-                if not self.is_valid_command(line.strip().split()):
+                if not self.commander.is_valid_command(line.strip().split()):
                     print(
                         f"{test_file}:{line_num}: `{line.strip()}` is invalid command"
                     )
