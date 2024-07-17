@@ -77,6 +77,9 @@ class Shell:
         return all(char in "0123456789ABCDEF" for char in value[2:])
 
     def run(self) -> None:
+        self.logger.print("User IP:192.XX.XX.XX be connected")
+        print("Hello ! Welcome to the Aut ut hul shell !")
+
         self.is_run = True
         while self.is_run:
             try:
@@ -90,6 +93,9 @@ class Shell:
 
             except Exception as e:
                 self.logger.print(e)
+
+        self.logger.print("User IP:192.XX.XX.XX be disconnected")
+        print("See you !")
 
     def select_commands(self, inputs: list[str]) -> None:
         if len(inputs) < 1:
@@ -211,11 +217,4 @@ class Shell:
 
 if __name__ == "__main__":
     shell = Shell()
-
-    shell.logger.print("User: Unknown IP:192.XX.XX.XX be connected")
-    print("Hello ! Welcome to the Aut ut hul shell !")
-
     shell.run()
-
-    shell.logger.print("User: Unknown IP:192.XX.XX.XX be disconnected")
-    print("See you !")
