@@ -47,11 +47,18 @@ class Shell:
         elif inputs[0] == "fullwrite":
             return len(inputs) == 2 and self.__is_valid_hex(inputs[1])
 
-        elif inputs[0] == "erase" or inputs[0] == "erase_range":
+        elif inputs[0] == "erase":
             return (
                 len(inputs) == 3
                 and self.__is_valid_address(inputs[1])
                 and self.__is_valid_address(inputs[2])
+            )
+        elif inputs[0] == "erase_range":
+            return (
+                len(inputs) == 3
+                and self.__is_valid_address(inputs[1])
+                and self.__is_valid_address(inputs[2])
+                and int(inputs[1]) < int(inputs[2])
             )
 
         elif len(inputs) == 1:
