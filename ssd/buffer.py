@@ -24,6 +24,10 @@ class InterfaceBuffer(ABC):
     def add_cmd(self):
         pass
 
+    @abstractmethod
+    def flush(self):
+        pass
+
 
 class Buffer(InterfaceBuffer):
     def __init__(
@@ -35,6 +39,7 @@ class Buffer(InterfaceBuffer):
         self.cmdlist_limitsize = cmdlist_limitsize
         self.strategy = self._select_strategy(strategy)
         self.csv_path = csv_path
+        self.csv_header = None
         self.cmdlist = self._load_csvfile_and_set_cmdlist()
 
     def add_cmd(self, cmd_type, address, value):
@@ -42,10 +47,11 @@ class Buffer(InterfaceBuffer):
             raise Exception("Invalid error occur")
 
         new_cmd = (cmd_type, address, value)
-        self.strategy.update(self.cmdlist, new_cmd)
+        self.cmdlist = self.strategy.update(self.cmdlist, new_cmd)
+        self._save_buffer_csv()
 
     def read_addressvalue_in_cmdlist(self, address):
-        rst_value = None  # value or None
+        rst_value = self.strategy.read(self.cmdlist, address)  # value or None
         return rst_value
 
     def _select_strategy(self, strategy):
@@ -58,6 +64,7 @@ class Buffer(InterfaceBuffer):
 
     def _load_csvfile_and_set_cmdlist(self):
         df = pd.read_csv(self.csv_path)
+        self.csv_header = df.columns.tolist()  # 헤더 저장
         rows_as_lists = df.values.tolist()
         cmdlist = list(rows_as_lists)
         return cmdlist
@@ -71,5 +78,10 @@ class Buffer(InterfaceBuffer):
     def get_cmdlist(self):
         return self.cmdlist
 
+    def _save_buffer_csv(self):
+        df = pd.DataFrame(self.cmdlist, columns=self.csv_header)
+        df.to_csv(self.csv_path, index=False, header=True)
 
-bf = Buffer()
+    def flush(self):
+        self.cmdlist = []
+        self._save_buffer_csv()

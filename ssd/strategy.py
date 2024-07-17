@@ -41,7 +41,7 @@ class DequeStrategy(InterfaceStrategy):
             updated_cmdlist = self._delete_overlap_and_add_cmd(updated_cmdlist, new_cmd)
         return updated_cmdlist
 
-    def _delete_overlap_and_add_cmd(cmdlist, new_cmd):
+    def _delete_overlap_and_add_cmd(self, cmdlist, new_cmd):
         if not cmdlist:
             cmdlist.append(new_cmd)
             return cmdlist
