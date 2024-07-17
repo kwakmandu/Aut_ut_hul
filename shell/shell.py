@@ -116,7 +116,7 @@ class Shell:
         except FileNotFoundError:
             print("파일이 존재하지 않습니다.")
 
-    def erase(self, address: str, size: str):
+    def erase(self, address: str, size: str) -> None:
         isize = int(size)
         while isize > 10:
             subprocess.run(
