@@ -1,9 +1,6 @@
-import contextlib
 import subprocess
 import sys
-from typing import io
-
-from shell.helper import Helper
+from helper.helper import Helper
 from logger.logger import Logger
 
 ALLOWED_INITIAL_COMMANDS = [
@@ -20,51 +17,46 @@ ALLOWED_INITIAL_COMMANDS = [
 
 class Commander:
     def __init__(self) -> None:
-        self.__command: list[str] = []
         self.ssd_path: str = "../ssd"
         self.helper: Helper = Helper()
         self.logger: Logger = Logger()
 
-    def set_command(self, command: list[str]) -> None:
-        self.__command = command
-
-    def get_command(self) -> list[str]:
-        return self.__command
-
-    def is_valid_command(self) -> bool:
-        if self.__command[0] not in ALLOWED_INITIAL_COMMANDS:
+    def is_valid_command(self, inputs: list[str]) -> bool:
+        if len(inputs) == 0:
             return False
 
-        if self.__command[0] == "write":
+        if inputs[0] not in ALLOWED_INITIAL_COMMANDS:
+            return False
+
+        if inputs[0] == "write":
             return (
-                len(self.__command) == 3
-                and self.__is_valid_address(self.__command[1])
-                and self.__is_valid_hex(self.__command[2])
+                len(inputs) == 3
+                and self.__is_valid_address(inputs[1])
+                and self.__is_valid_hex(inputs[2])
             )
 
-        elif self.__command[0] == "read":
-            return len(self.__command) == 2 and self.__is_valid_address(
-                self.__command[1]
-            )
+        elif inputs[0] == "read":
+            return len(inputs) == 2 and self.__is_valid_address(inputs[1])
 
-        elif self.__command[0] == "fullwrite":
-            return len(self.__command) == 2 and self.__is_valid_hex(self.__command[1])
+        elif inputs[0] == "fullwrite":
+            return len(inputs) == 2 and self.__is_valid_hex(inputs[1])
 
-        elif self.__command[0] == "erase":
+        elif inputs[0] == "erase":
             return (
-                len(self.__command) == 3
-                and self.__is_valid_address(self.__command[1])
-                and self.__is_valid_address(self.__command[2])
-            )
-        elif self.__command[0] == "erase_range":
-            return (
-                len(self.__command) == 3
-                and self.__is_valid_address(self.__command[1])
-                and self.__is_valid_address(self.__command[2])
-                and int(self.__command[1]) < int(self.__command[2])
+                len(inputs) == 3
+                and self.__is_valid_address(inputs[1])
+                and self.__is_valid_address(inputs[2])
             )
 
-        elif len(self.__command) == 1:
+        elif inputs[0] == "erase_range":
+            return (
+                len(inputs) == 3
+                and self.__is_valid_address(inputs[1])
+                and self.__is_valid_address(inputs[2])
+                and int(inputs[1]) < int(inputs[2])
+            )
+
+        elif len(inputs) == 1:
             return True
 
         return False
@@ -77,25 +69,25 @@ class Commander:
             return False
         return all(char in "0123456789ABCDEF" for char in value[2:])
 
-    def execute_command(self) -> None:
-        if len(self.__command) < 1:
+    def execute_command(self, inputs: list[str]) -> None:
+        if not inputs:
             return
 
-        match self.__command[0]:
+        match inputs[0]:
             case "write":
-                self.write(self.__command[1], self.__command[2])
+                self.write(inputs[1], inputs[2])
             case "read":
-                self.read(self.__command[1])
+                self.read(inputs[1])
             case "erase":
-                self.erase(self.__command[1], self.__command[2])
+                self.erase(inputs[1], inputs[2])
             case "erase_range":
-                self.erase(self.__command[1], self.__command[2])
+                self.erase(inputs[1], str(int(inputs[2]) - int(inputs[1])))
             case "exit":
                 self.exit()
             case "help":
                 self.help()
             case "fullwrite":
-                self.fullwrite(self.__command[1])
+                self.fullwrite(inputs[1])
             case "fullread":
                 self.fullread()
             case _:
@@ -155,22 +147,3 @@ class Commander:
         self.logger.print(f"fullread")
         for i in range(100):
             self.read(str(i))
-
-    def run_test(self, test_file: str) -> str:
-        self.logger.print(f"run {test_file}")
-        with open(test_file, "r", encoding="utf-8") as file:
-            output = io.StringIO()
-            with contextlib.redirect_stdout(output):
-                # 파일을 한 줄씩 읽기
-                for line in file:
-                    self.execute_command(line.strip().split())
-
-            return output.getvalue()
-
-    def read_test_result(self, file_path: str) -> str:
-        """주어진 경로의 파일을 읽어 내용 반환"""
-        with open(file_path, "r", encoding="utf-8") as file:
-            return file.read()
-
-    def compare_test_result(self, result_file: str, output: str) -> bool:
-        return output == self.read_test_result(result_file)
