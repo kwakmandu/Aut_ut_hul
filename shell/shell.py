@@ -108,7 +108,7 @@ class Shell:
             case "erase":
                 self.erase(inputs[1], inputs[2])
             case "erase_range":
-                self.erase(inputs[1], inputs[2] - inputs[1])
+                self.erase(inputs[1], str(int(inputs[2]) - int(inputs[1])))
             case "exit":
                 self.exit()
             case "help":
