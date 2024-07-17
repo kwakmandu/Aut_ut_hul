@@ -4,6 +4,7 @@ import os
 import subprocess
 import sys
 from helper import Helper
+from logger.logger import Logger
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
@@ -28,6 +29,7 @@ class Shell:
         self.ssd_path: str = "../ssd"
         self.test_script_path: str = "../testscript"
         self.helper: Helper = Helper()
+        self.logger: Logger = Logger()
 
     def is_valid_command(self, inputs: list[str]) -> bool:
         if inputs[0] not in ALLOWED_INITIAL_COMMANDS:
@@ -77,11 +79,17 @@ class Shell:
     def run(self) -> None:
         self.is_run = True
         while self.is_run:
-            inputs = input().split(" ")
-            if not self.is_valid_command(inputs):
-                print("INVALID COMMAND")
-                continue
-            self.select_commands(inputs)
+            try:
+                user_input = input()
+                user_input_list = user_input.split(" ")
+                if not self.is_valid_command(user_input_list):
+                    print("INVALID COMMAND")
+                    self.logger.print(f"INVALID COMMAND - {user_input}")
+                    continue
+                self.select_commands(user_input_list)
+
+            except Exception as e:
+                self.logger.print(e)
 
     def select_commands(self, inputs: list[str]) -> None:
         if len(inputs) < 1:
@@ -108,11 +116,13 @@ class Shell:
                 self.run_testscript(inputs[0])
 
     def write(self, address: str, data: str) -> None:
+        self.logger.print(f"write {address} {data}")
         subprocess.run(
             [sys.executable, f"{self.ssd_path}/virtual_ssd.py", "W", address, data]
         )
 
     def read(self, address: str) -> None:
+        self.logger.print(f"read {address}")
         subprocess.run(
             [sys.executable, f"{self.ssd_path}/virtual_ssd.py", "R", address]
         )
@@ -124,6 +134,7 @@ class Shell:
             print("파일이 존재하지 않습니다.")
 
     def erase(self, address: str, size: str) -> None:
+        self.logger.print(f"erase {address} {size}")
         isize = int(size)
         while isize > 10:
             subprocess.run(
@@ -141,21 +152,26 @@ class Shell:
         )
 
     def exit(self) -> None:
+        self.logger.print(f"exit")
         self.is_run = False
 
     def help(self) -> None:
+        self.logger.print(f"help")
         for h_info in self.helper.get_help_information():
             print(h_info)
 
     def fullwrite(self, data: str) -> None:
+        self.logger.print(f"fullwrite {data}")
         for i in range(100):
             self.write(str(i), data)
 
     def fullread(self) -> None:
+        self.logger.print(f"fullread")
         for i in range(100):
             self.read(str(i))
 
     def run_testscript(self, testcase: str) -> None:
+        self.logger.print(f"run testscript {testcase}")
         if testcase == "testapp1":
             self.run_test(
                 f"{self.test_script_path}/TestApp01.txt",
@@ -195,4 +211,11 @@ class Shell:
 
 if __name__ == "__main__":
     shell = Shell()
+
+    shell.logger.print("User: Unknown IP:192.XX.XX.XX be connected")
+    print("Hello ! Welcome to the Aut ut hul shell !")
+
     shell.run()
+
+    shell.logger.print("User: Unknown IP:192.XX.XX.XX be disconnected")
+    print("See you !")
