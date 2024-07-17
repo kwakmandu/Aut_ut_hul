@@ -214,7 +214,29 @@ class Shell:
         with open(file_path, "r", encoding="utf-8") as file:
             return file.read()
 
+    def run_script(self, script_list_file: str) -> None:
+        # TODO(WontaeJeong): handle file exceptions
+        with open(
+            f"{self.test_script_path}/{script_list_file}", "r", encoding="utf-8"
+        ) as file:
+            for line in file:
+                test_file, result_file = line.rstrip().split(" ")
+                self.run_test(
+                    f"{self.test_script_path}/{test_file}",
+                    f"{self.test_script_path}/{result_file}",
+                )
+
 
 if __name__ == "__main__":
-    shell = Shell()
-    shell.run()
+    try:
+        shell = Shell()
+        args = sys.argv[1:]  # Get command-line arguments excluding the script name
+
+        if len(args) == 0:
+            shell.run()
+        elif len(args) == 1:
+            shell.run_script(args[0])
+        else:
+            raise ValueError("This script accepts at most one argument.")
+    except Exception as e:
+        print(f"An error occurred: {e}")
