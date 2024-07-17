@@ -1,7 +1,10 @@
 import sys
+from collections import deque
 from typing import Optional
 
 from logger.logger import Logger
+from ssd.buffer import Buffer
+from storage_device_interface import StorageDeviceInterface
 from ssd.storage_device_interface import StorageDeviceInterface
 import pandas as pd
 import os
@@ -34,9 +37,13 @@ class VirtualSSD(StorageDeviceInterface):
         if os.path.exists(self.result_path):
             os.remove(self.result_path)
 
-        result_df = pd.DataFrame(
-            data=[self.nand_df.loc[address, "Data"]], columns=["Data"]
-        )
+        read_data = None
+        if buffer.get_size() > 0:
+            read_data = buffer.read_addressvalue_in_cmdlist(address)
+        if read_data is None:
+            read_data = self.nand_df.loc[address, "Data"]
+
+        result_df = pd.DataFrame(data=[read_data], columns=["Data"])
         result_df = result_df.replace("\n", "")
 
         with open(self.result_path, "w", encoding="utf-8") as file:
@@ -56,6 +63,8 @@ class VirtualSSD(StorageDeviceInterface):
 
 if __name__ == "__main__":
     ssd = VirtualSSD()
+    buffer = Buffer()
+
     cmd: Optional[str]
     address: Optional[str]
     value: Optional[str]
