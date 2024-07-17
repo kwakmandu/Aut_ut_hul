@@ -27,6 +27,11 @@ class VirtualSSD(StorageDeviceInterface):
         self.nand_df = pd.read_csv(self.nand_path)
 
     def write(self, address: int, data: str) -> None:
+        if buffer.get_size() == 10:
+            self.flush()
+        else:
+            buffer.add_cmd("W", address, data)
+
         self.nand_df.loc[address, "Data"] = data
         if os.path.exists(self.nand_path):
             os.remove(self.nand_path)
@@ -51,6 +56,11 @@ class VirtualSSD(StorageDeviceInterface):
         self.logger.print("Data has been successfully read from the SSD.")
 
     def erase(self, address: int, size: int) -> None:
+        if buffer.get_size() == 10:
+            self.flush()
+        else:
+            buffer.add_cmd("E", address, size)
+
         self.nand_df.loc[address : address + size - 1, "Data"] = INIT_VALUE
         if os.path.exists(self.nand_path):
             os.remove(self.nand_path)
@@ -58,7 +68,18 @@ class VirtualSSD(StorageDeviceInterface):
         self.logger.print("SSD has been successfully erased.")
 
     def flush(self) -> None:
-        pass
+        while buffer.cmdlist:
+            old_command = deque(buffer.cmdlist).popleft().strip().split()
+            match old_command[0]:
+                case "W":
+                    self.nand_df.loc[old_command[1], "Data"] = old_command[2]
+                case "E":
+                    self.nand_df.loc[old_command[1], "Data"] = INIT_VALUE
+
+        if os.path.exists(self.nand_path):
+            os.remove(self.nand_path)
+        self.nand_df["Data"].to_csv(self.nand_path, index_label="index")
+        self.logger.print("SSD has been successfully flushed.")
 
 
 if __name__ == "__main__":
