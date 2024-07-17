@@ -43,6 +43,8 @@ class VirtualSSD(StorageDeviceInterface):
             read_data = buffer.read_addressvalue_in_cmdlist(address)
         if read_data is None:
             read_data = self.nand_df.loc[address, "Data"]
+        elif read_data == "Erase":
+            read_data = INIT_VALUE
 
         result_df = pd.DataFrame(data=[read_data], columns=["Data"])
         result_df = result_df.replace("\n", "")
