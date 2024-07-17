@@ -2,7 +2,7 @@ import contextlib
 import io
 import os
 import sys
-from commander.commander import Commander
+from commander.commander import CommandExecutor, CommandValidator
 from logger.logger import Logger
 import re
 
@@ -26,7 +26,8 @@ class Shell:
         self.is_run = False
         self.ssd_dir: str = "../ssd"
         self.test_script_dir: str = "../testscript"
-        self.commander: Commander = Commander()
+        self.command_executor: CommandExecutor = CommandExecutor()
+        self.command_validator: CommandValidator = CommandValidator()
         self.logger: Logger = Logger()
 
     def run(self) -> None:
@@ -37,11 +38,11 @@ class Shell:
         while self.is_run:
             try:
                 user_inputs = input().split()
-                if not self.commander.is_valid_command(user_inputs):
+                if not self.command_validator.is_valid_command(user_inputs):
                     print("INVALID COMMAND")
                     self.logger.print(f"INVALID COMMAND - {" ".join(user_inputs)}")
                     continue
-                self.commander.execute_command(user_inputs)
+                self.command_executor.execute_command(user_inputs)
 
             except Exception as e:
                 self.logger.print(e)
@@ -56,7 +57,7 @@ class Shell:
             with contextlib.redirect_stdout(output):
                 # 파일을 한 줄씩 읽기
                 for line in file:
-                    self.commander.execute_command(line.strip().split())
+                    self.command_executor.execute_command(line.strip().split())
 
             return output.getvalue()
 
@@ -130,7 +131,7 @@ class Shell:
 
         with open(test_file_path, "r", encoding="utf-8") as file:
             for line_num, line in enumerate(file, start=1):
-                if not self.commander.is_valid_command(line.strip().split()):
+                if not self.command_validator.is_valid_command(line.strip().split()):
                     print(
                         f"{test_file}:{line_num}: `{line.strip()}` is invalid command"
                     )
