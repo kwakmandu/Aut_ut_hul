@@ -47,6 +47,7 @@ class Logger(metaclass=SingletonMeta):
 
         current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
         new_filename = f"../log/until_{current_time}.log"
+
         os.rename("../log/latest.log", new_filename)
 
         self.rename_old_logs()
@@ -97,10 +98,13 @@ class Logger(metaclass=SingletonMeta):
         파일 크기가 제한을 초과하면 회전합니다.
         호출한 모듈, 함수, 클래스 이름을 자동으로 포함시킵니다.
         """
-        if self.handler.stream.tell() + len(message.encode("utf-8")) >= MAX_BYTE:
-            self.rotate_logs()
-
         module_name, function_name, class_name = self.get_caller_info()
+
+        if (
+            class_name == "Shell"
+            and self.handler.stream.tell() + len(message.encode("utf-8")) >= MAX_BYTE
+        ):
+            self.rotate_logs()
 
         extra = {"class.func": f"{class_name}.{function_name}()"}
 
