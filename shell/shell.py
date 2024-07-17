@@ -11,6 +11,7 @@ ALLOWED_INITIAL_COMMANDS = [
     "write",
     "read",
     "erase",
+    "erase_range",
     "exit",
     "help",
     "fullwrite",
@@ -46,7 +47,7 @@ class Shell:
         elif inputs[0] == "fullwrite":
             return len(inputs) == 2 and self.__is_valid_hex(inputs[1])
 
-        elif inputs[0] == "erase":
+        elif inputs[0] == "erase" or inputs[0] == "erase_range":
             return (
                 len(inputs) == 3
                 and self.__is_valid_address(inputs[1])
@@ -86,6 +87,8 @@ class Shell:
                 self.read(inputs[1])
             case "erase":
                 self.erase(inputs[1], inputs[2])
+            case "erase_range":
+                self.erase(inputs[1], inputs[2])
             case "exit":
                 self.exit()
             case "help":
@@ -117,11 +120,11 @@ class Shell:
         size = int(size)
         while size > 10:
             subprocess.run(
-                [sys.executable, f"{self.ssd_path}/virtual_ssd.py", "E", address, 10]
+                [sys.executable, f"{self.ssd_path}/virtual_ssd.py", "E", address, "10"]
             )
             size -= 10
         subprocess.run(
-            [sys.executable, f"{self.ssd_path}/virtual_ssd.py", "E", address, size]
+            [sys.executable, f"{self.ssd_path}/virtual_ssd.py", "E", address, str(size)]
         )
 
     def exit(self) -> None:
