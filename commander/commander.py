@@ -15,12 +15,7 @@ ALLOWED_INITIAL_COMMANDS = [
 ]
 
 
-class Commander:
-    def __init__(self) -> None:
-        self.ssd_path: str = "../ssd"
-        self.helper: Helper = Helper()
-        self.logger: Logger = Logger()
-
+class CommandValidator:
     def is_valid_command(self, inputs: list[str]) -> bool:
         if len(inputs) == 0:
             return False
@@ -68,6 +63,13 @@ class Commander:
         if len(value) != 10 or value[:2] != "0x":
             return False
         return all(char in "0123456789ABCDEF" for char in value[2:])
+
+
+class CommandExecutor:
+    def __init__(self) -> None:
+        self.ssd_path: str = "../ssd"
+        self.helper: Helper = Helper()
+        self.logger: Logger = Logger()
 
     def execute_command(self, inputs: list[str]) -> None:
         if not inputs:
