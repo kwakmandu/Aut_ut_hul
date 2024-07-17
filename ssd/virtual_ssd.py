@@ -32,10 +32,6 @@ class VirtualSSD(StorageDeviceInterface):
         else:
             buffer.add_cmd("W", address, data)
 
-        self.nand_df.loc[address, "Data"] = data
-        if os.path.exists(self.nand_path):
-            os.remove(self.nand_path)
-        self.nand_df["Data"].to_csv(self.nand_path, index_label="index")
         self.logger.print("Data has been successfully written to the SSD.")
 
     def read(self, address: int) -> None:
@@ -61,20 +57,25 @@ class VirtualSSD(StorageDeviceInterface):
         else:
             buffer.add_cmd("E", address, size)
 
-        self.nand_df.loc[address : address + size - 1, "Data"] = INIT_VALUE
-        if os.path.exists(self.nand_path):
-            os.remove(self.nand_path)
-        self.nand_df["Data"].to_csv(self.nand_path, index_label="index")
         self.logger.print("SSD has been successfully erased.")
 
     def flush(self) -> None:
         while buffer.cmdlist:
             old_command = deque(buffer.cmdlist).popleft().strip().split()
+            command1 = int(old_command[1])
+            command2 = int(old_command[2])
             match old_command[0]:
                 case "W":
-                    self.nand_df.loc[old_command[1], "Data"] = old_command[2]
+                    self.nand_df.loc[command1, "Data"] = command2
+                    self.logger.print(
+                        f"Flushing... : write addr {command1} = data {command2}"
+                    )
                 case "E":
-                    self.nand_df.loc[old_command[1], "Data"] = INIT_VALUE
+                    self.nand_df.loc[command1 : command1 + command2 - 1] = INIT_VALUE
+                    self.logger.print(
+                        f"Flushing... : erase addr {command1} to addr {command1 + command2 - 1}"
+                    )
+                    self.logger.print("SSD has been successfully flushed.")
 
         if os.path.exists(self.nand_path):
             os.remove(self.nand_path)
