@@ -191,7 +191,7 @@ class Shell:
         else:
             print("INVALID COMMAND")
 
-    def run_test(self, test_file: str, result_file: str) -> bool:
+    def run_test(self, test_file: str) -> str:
         with open(test_file, "r", encoding="utf-8") as file:
             output = io.StringIO()
             with contextlib.redirect_stdout(output):
@@ -199,20 +199,17 @@ class Shell:
                 for line in file:
                     self.select_commands(line.strip().split())
 
-            captured_output = output.getvalue()
-            result_contents = self.read_test_result(result_file)
-
-            if captured_output == result_contents:
-                print(f"pass {test_file}")
-                return True
-            else:
-                print(f"fail {test_file}")
-                return False
+            return output.getvalue()
 
     def read_test_result(self, file_path: str) -> str:
         """주어진 경로의 파일을 읽어 내용 반환"""
         with open(file_path, "r", encoding="utf-8") as file:
             return file.read()
+
+    def compare_test_result(self, result_file: str, output: str) -> bool:
+        result_contents = self.read_test_result(result_file)
+
+        return output == result_contents
 
     def run_script(self, script_list_file: str) -> None:
         # TODO(WontaeJeong): handle file exceptions
@@ -221,10 +218,18 @@ class Shell:
         ) as file:
             for line in file:
                 test_file, result_file = line.rstrip().split(" ")
-                self.run_test(
+                test_file_path, result_file_path = (
                     f"{self.test_script_path}/{test_file}",
                     f"{self.test_script_path}/{result_file}",
                 )
+                print(f"{test_file} --- Run...", end="")
+
+                output = self.run_test(test_file_path)
+                if self.compare_test_result(result_file_path, output):
+                    print("Pass")
+                else:
+                    print("Fail")
+                    exit(1)
 
 
 if __name__ == "__main__":
