@@ -192,14 +192,14 @@ class Shell:
     def compare_test_result(self, result_file: str, output: str) -> bool:
         return output == self.read_test_result(result_file)
 
-    def run_test_list(self, script_list_file: str) -> None:
-        if not self.__is_valid_script_list_file(script_list_file):
-            self.logger.print(f"invalid testscript list: {script_list_file}")
+    def run_test_list(self, test_list_file: str) -> None:
+        if not self.__is_valid_test_list_file(test_list_file):
+            self.logger.print(f"invalid test list: {test_list_file}")
             exit(1)
 
-        self.logger.print(f"run testscript {script_list_file}")
-        script_list_file_path = f"{self.test_script_dir}/{script_list_file}"
-        with open(script_list_file_path, "r", encoding="utf-8") as file:
+        self.logger.print(f"run test list {test_list_file}")
+        test_list_file_path = f"{self.test_script_dir}/{test_list_file}"
+        with open(test_list_file_path, "r", encoding="utf-8") as file:
             for line in file:
                 test_file, result_file = line.rstrip().split(" ")
                 test_file_path, result_file_path = (
@@ -215,52 +215,48 @@ class Shell:
                     print("Fail")
                     exit(1)
 
-    def __is_valid_script_list_file(self, script_list_file: str) -> bool:
-        script_list_file_path = f"{self.test_script_dir}/{script_list_file}"
-        if not os.path.exists(script_list_file_path):
-            print(f"file {script_list_file} was not found.")
+    def __is_valid_test_list_file(self, test_list_file: str) -> bool:
+        test_list_file_path = f"{self.test_script_dir}/{test_list_file}"
+        if not os.path.exists(test_list_file_path):
+            print(f"file {test_list_file} was not found.")
             return False
 
-        with open(script_list_file_path, "r", encoding="utf-8") as file:
+        with open(test_list_file_path, "r", encoding="utf-8") as file:
             for line_num, line in enumerate(file, start=1):
-                if not self.__is_valid_script_list_line(
-                    line, line_num, script_list_file
-                ):
+                if not self.__is_valid_test_list_line(line, line_num, test_list_file):
                     return False
         return True
 
-    def __is_valid_script_list_line(
-        self, line: str, line_num: int, script_list_file: str
+    def __is_valid_test_list_line(
+        self, line: str, line_num: int, test_list_file: str
     ) -> bool:
         if not re.match(r"^\S+\.txt \S+\.txt$", line.strip()):
-            print(f"{script_list_file}:{line_num}: line does not match '*.txt *.txt'.")
+            print(f"{test_list_file}:{line_num}: line does not match '*.txt *.txt'.")
             return False
 
-        file1, file2 = line.split()
-        file1_path = f"{self.test_script_dir}/{file1}"
-        file2_path = f"{self.test_script_dir}/{file2}"
+        test_file, result_file = line.split()
+        test_file_path = f"{self.test_script_dir}/{test_file}"
+        result_file_path = f"{self.test_script_dir}/{result_file}"
 
-        if not os.path.exists(file1_path):
-            print(f"{script_list_file}:{line_num}: file {file1} does not exist.")
+        if not os.path.exists(test_file_path):
+            print(f"{test_list_file}:{line_num}: file {test_file} does not exist.")
             return False
-        if not self.__is_valid_script_file(file1):
+        if not self.__is_valid_test_file(test_file):
             return False
 
-        if not os.path.exists(file2_path):
-            print(f"{script_list_file}:{line_num}: file {file2} does not exist.")
-            return False
-        if not self.__is_valid_script_file(file2):
+        if not os.path.exists(result_file_path):
+            print(f"{test_list_file}:{line_num}: file {result_file} does not exist.")
             return False
         return True
 
-    def __is_valid_script_file(self, script_file: str) -> bool:
-        script_file_path = f"{self.test_script_dir}/{script_file}"
+    def __is_valid_test_file(self, test_file: str) -> bool:
+        test_file_path = f"{self.test_script_dir}/{test_file}"
 
-        with open(script_file_path, "r", encoding="utf-8") as file:
+        with open(test_file_path, "r", encoding="utf-8") as file:
             for line_num, line in enumerate(file, start=1):
                 if not self.is_valid_command(line.strip().split()):
                     print(
-                        f"{script_file}:{line_num}: {line.strip()} is invalid command"
+                        f"{test_file}:{line_num}: `{line.strip()}` is invalid command"
                     )
                     return False
 
