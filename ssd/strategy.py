@@ -3,10 +3,10 @@ from abc import ABC, abstractmethod
 
 class InterfaceStrategy(ABC):
     @abstractmethod
-    def optimise(self):
+    def update(self):
         pass
 
-class DequeStrategy(InterfaceStrategy):
 
-    def optimise(self):
+class DequeStrategy(InterfaceStrategy):
+    def update(self):
         pass

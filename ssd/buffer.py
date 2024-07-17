@@ -54,13 +54,17 @@ class Buffer(InterfaceBuffer):
     def get_cmdlist(self):
         return self.cmdlist
 
-    def add_cmd(self, command, address, value):
-        new_command = (command, address, value)
-        self.strategy.optimise(self.cmdlist, new_command)
+    def add_cmd(self, cmd_type, address, value):
+        new_cmd = (cmd_type, address, value)
+        self.strategy.update(self.cmdlist, new_cmd)
 
     def select_strategy(self, strategy):
         if strategy == "Deque":
             return DequeStrategy()
+
+    def read_addressvalue_in_cmdlist(self, address):
+        rst_value = None  # value or None
+        return rst_value
 
 
 bf = Buffer()
