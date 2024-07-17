@@ -112,7 +112,7 @@ class Shell:
             ]
         )
 
-    def flush(self):
+    def flush(self) -> None:
         self.logger.print(f"flush")
         subprocess.run([sys.executable, f"{self.ssd_path}/virtual_ssd.py", "F"])
 
