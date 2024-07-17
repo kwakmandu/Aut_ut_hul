@@ -117,14 +117,20 @@ class Shell:
             print("파일이 존재하지 않습니다.")
 
     def erase(self, address: str, size: str):
-        size = int(size)
-        while size > 10:
+        isize = int(size)
+        while isize > 10:
             subprocess.run(
                 [sys.executable, f"{self.ssd_path}/virtual_ssd.py", "E", address, "10"]
             )
-            size -= 10
+            isize -= 10
         subprocess.run(
-            [sys.executable, f"{self.ssd_path}/virtual_ssd.py", "E", address, str(size)]
+            [
+                sys.executable,
+                f"{self.ssd_path}/virtual_ssd.py",
+                "E",
+                address,
+                str(isize),
+            ]
         )
 
     def exit(self) -> None:
