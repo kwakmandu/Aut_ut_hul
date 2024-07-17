@@ -40,6 +40,13 @@ class VirtualSSD(StorageDeviceInterface):
         with open(self.result_path, "w", encoding="utf-8") as file:
             file.write(str(result_df.loc[0, "Data"]))
 
+    def erase(self, address: int, size: int) -> None:
+        self.nand_df = pd.read_csv(self.nand_path)
+        self.nand_df.loc[address : address + size - 1, "Data"] = INIT_VALUE
+        if os.path.exists(self.nand_path):
+            os.remove(self.nand_path)
+        self.nand_df["Data"].to_csv(self.nand_path, index_label="index")
+
 
 if __name__ == "__main__":
     ssd = VirtualSSD()
@@ -55,3 +62,6 @@ if __name__ == "__main__":
     elif cmd == "R":
         if address is not None:
             ssd.read(int(address))
+    elif cmd == "E":
+        if address is not None and value is not None:
+            ssd.erase(int(address), int(value))
