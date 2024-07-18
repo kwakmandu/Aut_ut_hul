@@ -71,7 +71,10 @@ class CommandExecutor:
         self.helper: Helper = Helper()
         self.logger: Logger = Logger()
 
-    def execute_command(self, inputs: list[str]) -> None:
+    def execute_command(self, inputs: list[str]) -> bool:
+        if not inputs:
+            return
+
         match inputs[0]:
             case "write":
                 self.write(inputs[1], inputs[2])
