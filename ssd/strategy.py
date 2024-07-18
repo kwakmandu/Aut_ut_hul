@@ -4,16 +4,16 @@ from collections import deque
 
 class InterfaceStrategy(ABC):
     @abstractmethod
-    def update(self):
+    def update(self) -> None:
         pass
 
     @abstractmethod
-    def read(self):
+    def read(self) -> None:
         pass
 
 
 class DequeStrategy(InterfaceStrategy):
-    def update(self, cmdlist, new_cmd):
+    def update(self, cmdlist, new_cmd) -> list:
         deque_cmdlist = deque(cmdlist)
         updated_cmdlist = list()
 
@@ -41,7 +41,7 @@ class DequeStrategy(InterfaceStrategy):
             updated_cmdlist = self._delete_overlap_and_add_cmd(updated_cmdlist, new_cmd)
         return updated_cmdlist
 
-    def _delete_overlap_and_add_cmd(self, cmdlist, new_cmd):
+    def _delete_overlap_and_add_cmd(self, cmdlist, new_cmd) -> list:
 
         if not cmdlist:
             cmdlist.append(new_cmd)
@@ -63,7 +63,7 @@ class DequeStrategy(InterfaceStrategy):
         cmdlist.append(new_cmd)
         return cmdlist
 
-    def read(self, cmdlist, address):
+    def read(self, cmdlist, address) -> None or str:
         if not cmdlist:
             return None
 

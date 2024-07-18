@@ -42,7 +42,7 @@ class Buffer(InterfaceBuffer):
         self.csv_header = None
         self.cmdlist = self._load_csvfile_and_set_cmdlist()
 
-    def add_cmd(self, cmd_type, address, value):
+    def add_cmd(self, cmd_type, address, value) -> None:
         if self._is_invalid():
             raise Exception("Invalid error occur")
 
@@ -50,19 +50,19 @@ class Buffer(InterfaceBuffer):
         self.cmdlist = self.strategy.update(self.cmdlist, new_cmd)
         self._save_buffer_csv()
 
-    def read_addressvalue_in_cmdlist(self, address):
+    def read_addressvalue_in_cmdlist(self, address) -> str:
         rst_value = self.strategy.read(self.cmdlist, address)  # value or None
         return rst_value
 
-    def _select_strategy(self, strategy):
+    def _select_strategy(self, strategy) -> DequeStrategy:
         if strategy == "Deque":
             return DequeStrategy()
 
-    def _is_invalid(self):
+    def _is_invalid(self) -> bool:
         if len(self.cmdlist) >= self.cmdlist_limitsize:
             return True
 
-    def _load_csvfile_and_set_cmdlist(self):
+    def _load_csvfile_and_set_cmdlist(self) -> list:
         if not os.path.exists(self.csv_path):
             init_df = pd.DataFrame(columns=["command", "address", "value"])
             init_df.to_csv(self.csv_path, index=False)
@@ -72,19 +72,19 @@ class Buffer(InterfaceBuffer):
         cmdlist = list(rows_as_lists)
         return cmdlist
 
-    def get_cmdlist_limitsize(self):
+    def get_cmdlist_limitsize(self) -> int:
         return self.cmdlist_limitsize
 
-    def get_size(self):
+    def get_size(self) -> int:
         return len(self.cmdlist)
 
-    def get_cmdlist(self):
+    def get_cmdlist(self) -> list:
         return self.cmdlist
 
-    def _save_buffer_csv(self):
+    def _save_buffer_csv(self) -> None:
         df = pd.DataFrame(self.cmdlist, columns=self.csv_header)
         df.to_csv(self.csv_path, index=False, header=True)
 
-    def flush(self):
+    def flush(self) -> None:
         self.cmdlist = []
         self._save_buffer_csv()
