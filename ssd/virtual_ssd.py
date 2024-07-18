@@ -84,7 +84,7 @@ class VirtualSSD(StorageDeviceInterface):
         if os.path.exists(self.nand_path):
             os.remove(self.nand_path)
         self.nand_df["Data"].to_csv(self.nand_path, index_label="index")
-        
+
     def execute_command(
         self, cmd: str, address: Optional[str], value: Optional[str]
     ) -> None:
@@ -97,5 +97,7 @@ class VirtualSSD(StorageDeviceInterface):
         elif cmd == "E":
             if address is not None and value is not None:
                 self.erase(int(address), int(value))
+        elif cmd == "F":
+            self.flush()
         else:
             self.logger.print("INVALID COMMAND")
