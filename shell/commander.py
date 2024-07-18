@@ -1,6 +1,6 @@
 import subprocess
 import sys
-from helper import Helper
+from shell.helper import Helper
 from logger.logger import Logger
 
 ALLOWED_INITIAL_COMMANDS = [
