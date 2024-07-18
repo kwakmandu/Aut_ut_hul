@@ -74,24 +74,16 @@ class Logger(metaclass=SingletonMeta):
 
     def get_caller_info(self) -> Tuple[str, str, str]:
         stack = inspect.stack()
-        caller_frame = None
         for frame in stack[2:]:
             module = inspect.getmodule(frame[0])
             if module and module.__name__ != __name__:
-                caller_frame = frame
-                break
-        if caller_frame:
-            module = inspect.getmodule(caller_frame[0])
-            module_name = module.__name__ if module else ""
-            function_name = caller_frame.function
-
-            try:
-                class_name = caller_frame[0].f_locals["self"].__class__.__name__
-            except (KeyError, AttributeError):
-                class_name = ""
-
-            return module_name, function_name, class_name
-
+                module_name = module.__name__
+                function_name = frame.function
+                try:
+                    class_name = frame[0].f_locals["self"].__class__.__name__
+                except (KeyError, AttributeError):
+                    class_name = ""
+                return module_name, function_name, class_name
         return "", "", ""
 
     def print(self, message: str) -> None:
