@@ -31,9 +31,7 @@ class VirtualSSD(StorageDeviceInterface):
     def write(self, address: int, data: str) -> None:
         if self.buffer.get_size() == 10:
             self.flush()
-        else:
-            self.buffer.add_cmd("W", address, data)
-
+        self.buffer.add_cmd("W", address, data)
         self.logger.print("Data has been successfully written to the SSD.")
 
     def read(self, address: int) -> None:
@@ -59,9 +57,7 @@ class VirtualSSD(StorageDeviceInterface):
     def erase(self, address: int, size: str) -> None:
         if self.buffer.get_size() == 10:
             self.flush()
-        else:
-            self.buffer.add_cmd("E", address, size)
-
+        self.buffer.add_cmd("E", address, size)
         self.logger.print("SSD has been successfully erased.")
 
     def flush(self) -> None:
