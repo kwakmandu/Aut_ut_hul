@@ -79,10 +79,10 @@ class DequeStrategy(InterfaceStrategy):
 
         for cmd in reversed(cmd_list):
             # cmd_type, cmd_address, cmd_value = cmd
-            if address == cmd.address:
-                if cmd.type == "W":
-                    return cmd.value
+            if cmd.type == "E" and cmd.address <= address <= int(cmd.value):
                 return "Erase"
+            if cmd.type == "W" and cmd.address == address:
+                return cmd.value
         return None
 
     def _update_heap_write_address(
