@@ -1,0 +1,8 @@
+write 1 0xAAAABBBB
+write 2 0xAAAABBBB
+read 1
+read 2
+erase 1 2
+read 1
+read 2
+flush

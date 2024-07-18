@@ -1,0 +1,9 @@
+write 1 0xAAAABBBB
+write 2 0xAAAABBBB
+read 1
+read 2
+write 1 0x12345678
+write 2 0x12345678
+read 1
+read 2
+flush

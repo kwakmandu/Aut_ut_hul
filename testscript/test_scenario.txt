@@ -1,0 +1,22 @@
+test scenario
+
+* 주의사항: nand.csv와 buffer.csv가 없는 상태에서 test 진행 필요
+
+* shell에서 구동
+0. help
+0. INVALID COMMAND
+0. exit - 꺼지는거 확인
+
+* run list 구동
+1. write 전 초기값 read로 확인
+2. write - read로 확인
+3. erase - read로 확인
+4. erase_range - read로 확인
+5. fullwrite - fullread로 확인
+6. run list 구동 중 FAIL 확인
+
+* 여기까지 했으면 log가 여러개 생겼을 것
+7. log 저장된 내용 확인
+8. log 많아지면 현재 시간 및 zip으로 저장되는 것 확인
+
+9. Buffer test 5개

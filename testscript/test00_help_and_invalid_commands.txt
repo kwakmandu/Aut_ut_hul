@@ -1,0 +1,39 @@
+help
+
+write
+write 0
+write -1 0x12345678
+write 0 1234
+write AAA 0xAAAABBBB
+write 1 0xZXSDFEWE
+
+read
+read AAA
+read 300
+read -1
+read 0 0x12345678
+
+fullwrite 0 0x12345678
+fullwrite 1234
+fullwrite 0xZXSDFEWE
+
+fullread 0
+
+erase
+erase 0
+erase -1 100
+erase 0 200
+erase 200 10
+erase 10 10 0x12345678
+
+erase_range
+erase_range 0
+erase_range 5 100
+erase_range -1 100
+erase_range 0 0x12345678
+
+flush 0
+flush 0x12345678
+
+exit
+
