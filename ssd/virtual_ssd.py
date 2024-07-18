@@ -2,12 +2,11 @@ import sys
 from typing import Optional
 
 from logger.logger import Logger
-from storage_device_interface import StorageDeviceInterface
+from ssd.storage_device_interface import StorageDeviceInterface
 import pandas as pd
 import os
 
 INIT_VALUE = "0x00000000"
-os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 
 class VirtualSSD(StorageDeviceInterface):
@@ -50,22 +49,3 @@ class VirtualSSD(StorageDeviceInterface):
             os.remove(self.nand_path)
         self.nand_df["Data"].to_csv(self.nand_path, index_label="index")
         self.logger.print("SSD has been successfully erased.")
-
-
-if __name__ == "__main__":
-    ssd = VirtualSSD()
-    cmd: Optional[str]
-    address: Optional[str]
-    value: Optional[str]
-
-    cmd, address, value = (sys.argv[1:4] + [None] * 3)[:3]
-
-    if cmd == "W":
-        if address is not None and value is not None:
-            ssd.write(int(address), value)
-    elif cmd == "R":
-        if address is not None:
-            ssd.read(int(address))
-    elif cmd == "E":
-        if address is not None and value is not None:
-            ssd.erase(int(address), int(value))

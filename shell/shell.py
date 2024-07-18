@@ -2,11 +2,10 @@ import contextlib
 import io
 import os
 import sys
-from commander import CommandExecutor, CommandValidator
+from shell.commander import CommandExecutor, CommandValidator
 from logger.logger import Logger
 import re
 
-os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 ALLOWED_INITIAL_COMMANDS = [
     "write",
@@ -24,7 +23,7 @@ class Shell:
 
     def __init__(self) -> None:
         self.is_run = False
-        self.ssd_dir: str = "../ssd"
+        self.ssd_dir: str = "../"
         self.test_script_dir: str = "../testscript"
         self.command_executor: CommandExecutor = CommandExecutor()
         self.command_validator: CommandValidator = CommandValidator()
@@ -138,18 +137,3 @@ class Shell:
                     return False
 
         return True
-
-
-if __name__ == "__main__":
-    try:
-        shell = Shell()
-        args = sys.argv[1:]  # Get command-line arguments excluding the script name
-
-        if len(args) == 0:
-            shell.run()
-        elif len(args) == 1:
-            shell.run_test_list(args[0])
-        else:
-            raise ValueError("This script accepts at most one argument.")
-    except Exception as e:
-        print(f"An error occurred: {e}")
