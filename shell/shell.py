@@ -83,7 +83,7 @@ class Shell:
                     f"{self.test_script_dir}/{test_file}",
                     f"{self.test_script_dir}/{result_file}",
                 )
-                print(f"{test_file} --- Run...", end="")
+                print(f"{test_file} --- Run...", end="", flush=True)
 
                 output = self.run_test(test_file_path)
                 if self.compare_test_result(result_file_path, output):
