@@ -4,7 +4,7 @@ write 12 0xAAAABBBB
 write 13 0xAAAABBBB
 read 10
 read 13
-erase_range 10 14
+erase 10 4
 read 10
 read 13
 flush

@@ -1,3 +1,5 @@
 test03_erase.txt test03_result.txt
 test04_erase_range.txt test04_result.txt
+test07_erase.txt test07_result.txt
+test08_erase_range.txt test08_result.txt
 test06_fail.txt test06_result.txt

@@ -79,7 +79,10 @@ class DequeStrategy(InterfaceStrategy):
 
         for cmd in reversed(cmd_list):
             # cmd_type, cmd_address, cmd_value = cmd
-            if cmd.type == "E" and cmd.address <= address <= int(cmd.value):
+            if (
+                cmd.type == "E"
+                and cmd.address <= address <= int(cmd.value) + cmd.address - 1
+            ):
                 return "Erase"
             if cmd.type == "W" and cmd.address == address:
                 return cmd.value
