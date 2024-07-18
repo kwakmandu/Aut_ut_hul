@@ -63,6 +63,9 @@ class Buffer(InterfaceBuffer):
             return True
 
     def _load_csvfile_and_set_cmdlist(self):
+        if not os.path.exists(self.csv_path):
+            init_df = pd.DataFrame(columns=["command", "address", "value"])
+            init_df.to_csv(self.csv_path, index=False)
         df = pd.read_csv(self.csv_path)
         self.csv_header = df.columns.tolist()  # 헤더 저장
         rows_as_lists = df.values.tolist()
