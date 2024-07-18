@@ -60,7 +60,8 @@ class Buffer(InterfaceBuffer):
             return DequeStrategy()
 
     def _is_invalid(self) -> bool:
-        return len(self.cmdlist) >= self.cmdlist_limitsize
+        if len(self.cmdlist) >= self.cmdlist_limitsize:
+            return True
 
     def _load_csvfile_and_set_cmdlist(self) -> List[Any]:
         if not os.path.exists(self.csv_path):

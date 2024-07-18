@@ -1,0 +1,5 @@
+command,address,value
+E,10,2
+E,40,4
+W,12,0x12345678
+W,13,0x12345678
