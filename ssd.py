@@ -1,10 +1,10 @@
 import sys
 from typing import Optional
-
 from ssd.virtual_ssd import VirtualSSD
 
 if __name__ == "__main__":
     ssd = VirtualSSD()
+
     cmd: Optional[str]
     address: Optional[str]
     value: Optional[str]
@@ -20,3 +20,5 @@ if __name__ == "__main__":
     elif cmd == "E":
         if address is not None and value is not None:
             ssd.erase(int(address), int(value))
+    elif cmd == "F":
+        ssd.flush()

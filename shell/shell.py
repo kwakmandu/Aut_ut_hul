@@ -1,7 +1,6 @@
 import contextlib
 import io
 import os
-import sys
 from shell.commander import CommandExecutor, CommandValidator
 from logger.logger import Logger
 import re
@@ -95,91 +94,6 @@ class Shell:
 
         self.logger.print("User IP:192.XX.XX.XX be disconnected")
         print("See you !")
-
-    def select_commands(self, inputs: list[str]) -> None:
-        if len(inputs) < 1:
-            return
-
-        match inputs[0]:
-            case "write":
-                self.write(inputs[1], inputs[2])
-            case "read":
-                self.read(inputs[1])
-            case "erase":
-                self.erase(inputs[1], inputs[2])
-            case "erase_range":
-                self.erase(inputs[1], inputs[2])
-            case "flush":
-                self.flush()
-            case "exit":
-                self.exit()
-            case "help":
-                self.help()
-            case "fullwrite":
-                self.fullwrite(inputs[1])
-            case "fullread":
-                self.fullread()
-            case _:
-                print("INVALID COMMAND")
-
-    def write(self, address: str, data: str) -> None:
-        self.logger.print(f"write {address} {data}")
-        subprocess.run(
-            [sys.executable, f"{self.ssd_path}/virtual_ssd.py", "W", address, data]
-        )
-
-    def read(self, address: str) -> None:
-        self.logger.print(f"read {address}")
-        subprocess.run(
-            [sys.executable, f"{self.ssd_path}/virtual_ssd.py", "R", address]
-        )
-        try:
-            with open(f"{self.ssd_path}/result.txt", "r") as file:
-                file_contents = file.read().strip()
-                print(file_contents)
-        except FileNotFoundError:
-            print("파일이 존재하지 않습니다.")
-
-    def erase(self, address: str, size: str) -> None:
-        self.logger.print(f"erase {address} {size}")
-        isize = int(size)
-        while isize > 10:
-            subprocess.run(
-                [sys.executable, f"{self.ssd_path}/virtual_ssd.py", "E", address, "10"]
-            )
-            isize -= 10
-        subprocess.run(
-            [
-                sys.executable,
-                f"{self.ssd_path}/virtual_ssd.py",
-                "E",
-                address,
-                str(isize),
-            ]
-        )
-
-    def flush(self) -> None:
-        self.logger.print(f"flush")
-        subprocess.run([sys.executable, f"{self.ssd_path}/virtual_ssd.py", "F"])
-
-    def exit(self) -> None:
-        self.logger.print(f"exit")
-        self.is_run = False
-
-    def help(self) -> None:
-        self.logger.print(f"help")
-        for h_info in self.helper.get_help_information():
-            print(h_info)
-
-    def fullwrite(self, data: str) -> None:
-        self.logger.print(f"fullwrite {data}")
-        for i in range(100):
-            self.write(str(i), data)
-
-    def fullread(self) -> None:
-        self.logger.print(f"fullread")
-        for i in range(100):
-            self.read(str(i))
 
     def run_test(self, test_file: str) -> str:
         self.logger.print(f"run {test_file}")
