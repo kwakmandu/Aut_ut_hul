@@ -13,5 +13,6 @@ def main() -> None:
     cmd, address, value = (sys.argv[1:4] + [None] * 3)[:3]
     ssd.execute_command(cmd, address, value)
 
+
 if __name__ == "__main__":
     main()
