@@ -8,17 +8,6 @@ import re
 
 from shell.script_tester import ScriptTester
 
-ALLOWED_INITIAL_COMMANDS = [
-    "write",
-    "read",
-    "erase",
-    "erase_range",
-    "exit",
-    "help",
-    "fullwrite",
-    "fullread",
-]
-
 
 class Shell:
 
@@ -28,7 +17,9 @@ class Shell:
         self.command_executor: CommandExecutor = CommandExecutor()
         self.command_validator: CommandValidator = CommandValidator()
         self.logger: Logger = Logger()
-        self.script_tester = ScriptTester(self.command_executor, self.command_validator)
+        self.script_tester: ScriptTester = ScriptTester(
+            self.command_executor, self.command_validator
+        )
 
     def run(self) -> None:
         self.logger.print("User IP:192.XX.XX.XX be connected")
