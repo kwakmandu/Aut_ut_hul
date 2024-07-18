@@ -13,7 +13,6 @@ class Shell:
 
     def __init__(self) -> None:
         self.is_run = False
-        self.ssd_dir: str = "../"
         self.command_executor: CommandExecutor = CommandExecutor()
         self.command_validator: CommandValidator = CommandValidator()
         self.logger: Logger = Logger()
