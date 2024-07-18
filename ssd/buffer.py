@@ -14,19 +14,19 @@ class InterfaceBuffer(ABC):
         pass
 
     @abstractmethod
-    def get_size(self):
+    def get_size(self) -> int:
         pass
 
     @abstractmethod
-    def get_cmdlist(self):
+    def get_cmdlist(self) -> List[Any]:
         pass
 
     @abstractmethod
-    def add_cmd(self):
+    def add_cmd(self, cmd_type: str, address: int, value: str) -> None:
         pass
 
     @abstractmethod
-    def flush(self):
+    def flush(self) -> None:
         pass
 
 

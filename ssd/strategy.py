@@ -1,22 +1,22 @@
 from abc import ABC, abstractmethod
 from collections import deque
-from typing import Any, List
+from typing import Any, List, Tuple
 
 
 class InterfaceStrategy(ABC):
     @abstractmethod
-    def update(self) -> None:
+    def update(self, cmdlist: List[Any], new_cmd: Tuple[str, int, Any]) -> List[Any]:
         pass
 
     @abstractmethod
-    def read(self) -> None:
+    def read(self, cmdlist: List[Any], address: int) -> Any:
         pass
 
 
 class DequeStrategy(InterfaceStrategy):
-    def update(self, cmdlist: list, new_cmd: str) -> List[Any]:
+    def update(self, cmdlist: List[Any], new_cmd: Tuple[str, int, Any]) -> List[Any]:
         deque_cmdlist = deque(cmdlist)
-        updated_cmdlist = list()
+        updated_cmdlist: List[Any] = list()
 
         cmd_type, address, value = new_cmd
         if cmd_type == "W":
@@ -42,13 +42,16 @@ class DequeStrategy(InterfaceStrategy):
             updated_cmdlist = self._delete_overlap_and_add_cmd(updated_cmdlist, new_cmd)
         return updated_cmdlist
 
-    def _delete_overlap_and_add_cmd(self, cmdlist: list, new_cmd: str) -> List[Any]:
+    def _delete_overlap_and_add_cmd(
+        self, cmdlist: List[Any], new_cmd: Tuple[str, int, Any]
+    ) -> List[Any]:
 
         if not cmdlist:
             cmdlist.append(new_cmd)
             return cmdlist
 
         righttop_cmd = cmdlist[-1]
+
         pop_cmd_type, pop_cmd_address, pop_cmd_value = righttop_cmd
         new_cmd_type, new_cmd_address, new_cmd_value = new_cmd
 
@@ -64,10 +67,11 @@ class DequeStrategy(InterfaceStrategy):
         cmdlist.append(new_cmd)
         return cmdlist
 
-    def read(self, cmdlist: list, address: int) -> None or str:
+    def read(self, cmdlist: List[Any], address: int) -> Any:
         if not cmdlist:
             return None
 
+        cmd: Tuple[str, int, Any]
         for cmd in reversed(cmdlist):
             cmd_type, cmd_address, cmd_value = cmd
             if address == cmd_address:
