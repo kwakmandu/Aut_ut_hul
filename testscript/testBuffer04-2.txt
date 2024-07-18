@@ -1,0 +1,3 @@
+erase 50 1
+erase 40 5
+write 50 0xABCD1234

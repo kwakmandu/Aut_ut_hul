@@ -1,0 +1,4 @@
+erase 10 4
+erase 40 5
+write 12 0xABCD1234
+write 13 0x4BCD5351

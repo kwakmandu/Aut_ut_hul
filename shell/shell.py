@@ -1,11 +1,9 @@
 import contextlib
 import io
 import os
-import sys
 from shell.commander import CommandExecutor, CommandValidator
 from logger.logger import Logger
 import re
-
 from shell.script_tester import ScriptTester
 
 
