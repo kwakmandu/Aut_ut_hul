@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from collections import deque
+from typing import Any, List
 
 
 class InterfaceStrategy(ABC):
@@ -13,7 +14,7 @@ class InterfaceStrategy(ABC):
 
 
 class DequeStrategy(InterfaceStrategy):
-    def update(self, cmdlist, new_cmd) -> list:
+    def update(self, cmdlist: list, new_cmd: str) -> List[Any]:
         deque_cmdlist = deque(cmdlist)
         updated_cmdlist = list()
 
@@ -41,7 +42,7 @@ class DequeStrategy(InterfaceStrategy):
             updated_cmdlist = self._delete_overlap_and_add_cmd(updated_cmdlist, new_cmd)
         return updated_cmdlist
 
-    def _delete_overlap_and_add_cmd(self, cmdlist, new_cmd) -> list:
+    def _delete_overlap_and_add_cmd(self, cmdlist: list, new_cmd: str) -> List[Any]:
 
         if not cmdlist:
             cmdlist.append(new_cmd)
@@ -63,7 +64,7 @@ class DequeStrategy(InterfaceStrategy):
         cmdlist.append(new_cmd)
         return cmdlist
 
-    def read(self, cmdlist, address) -> None or str:
+    def read(self, cmdlist: list, address: int) -> None or str:
         if not cmdlist:
             return None
 

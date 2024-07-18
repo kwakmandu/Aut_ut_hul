@@ -1,5 +1,6 @@
 import os
 from collections import deque
+from typing import List, Any
 
 import pandas as pd
 from abc import ABC, abstractmethod
@@ -42,7 +43,7 @@ class Buffer(InterfaceBuffer):
         self.csv_header = None
         self.cmdlist = self._load_csvfile_and_set_cmdlist()
 
-    def add_cmd(self, cmd_type, address, value) -> None:
+    def add_cmd(self, cmd_type: str, address: int, value: str) -> None:
         if self._is_invalid():
             raise Exception("Invalid error occur")
 
@@ -50,11 +51,11 @@ class Buffer(InterfaceBuffer):
         self.cmdlist = self.strategy.update(self.cmdlist, new_cmd)
         self._save_buffer_csv()
 
-    def read_addressvalue_in_cmdlist(self, address) -> str:
+    def read_addressvalue_in_cmdlist(self, address: int) -> str:
         rst_value = self.strategy.read(self.cmdlist, address)  # value or None
         return rst_value
 
-    def _select_strategy(self, strategy) -> DequeStrategy:
+    def _select_strategy(self, strategy: str) -> DequeStrategy:
         if strategy == "Deque":
             return DequeStrategy()
 
@@ -62,7 +63,7 @@ class Buffer(InterfaceBuffer):
         if len(self.cmdlist) >= self.cmdlist_limitsize:
             return True
 
-    def _load_csvfile_and_set_cmdlist(self) -> list:
+    def _load_csvfile_and_set_cmdlist(self) -> List[Any]:
         if not os.path.exists(self.csv_path):
             init_df = pd.DataFrame(columns=["command", "address", "value"])
             init_df.to_csv(self.csv_path, index=False)
@@ -78,7 +79,7 @@ class Buffer(InterfaceBuffer):
     def get_size(self) -> int:
         return len(self.cmdlist)
 
-    def get_cmdlist(self) -> list:
+    def get_cmdlist(self) -> List[Any]:
         return self.cmdlist
 
     def _save_buffer_csv(self) -> None:
