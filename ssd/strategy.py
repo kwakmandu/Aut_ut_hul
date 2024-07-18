@@ -67,7 +67,7 @@ class DequeStrategy(InterfaceStrategy):
         cmdlist.append(new_cmd)
         return cmdlist
 
-    def read(self, cmdlist: List[Any], address: int) -> Any:
+    def read(self, cmdlist: List[Any], address: int) -> str | None:
         if not cmdlist:
             return None
 
