@@ -72,9 +72,6 @@ class CommandExecutor:
         self.logger: Logger = Logger()
 
     def execute_command(self, inputs: list[str]) -> None:
-        if not inputs:
-            return
-
         match inputs[0]:
             case "write":
                 self.write(inputs[1], inputs[2])
@@ -86,6 +83,7 @@ class CommandExecutor:
                 self.erase(inputs[1], str(int(inputs[2]) - int(inputs[1])))
             case "exit":
                 self.exit()
+                return False
             case "help":
                 self.help()
             case "fullwrite":
@@ -94,6 +92,8 @@ class CommandExecutor:
                 self.fullread()
             case _:
                 print("INVALID COMMAND")
+
+        return True
 
     def write(self, address: str, data: str) -> None:
         self.logger.print(f"write {address} {data}")
@@ -133,7 +133,6 @@ class CommandExecutor:
 
     def exit(self) -> None:
         self.logger.print(f"exit")
-        self.is_run = False
 
     def help(self) -> None:
         self.logger.print(f"help")
