@@ -1,2 +1,3 @@
 fullwrite 0xABCDFFFF
 fullread
+flush
