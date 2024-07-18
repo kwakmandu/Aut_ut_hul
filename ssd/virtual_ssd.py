@@ -62,23 +62,24 @@ class VirtualSSD(StorageDeviceInterface):
         self.logger.print("SSD has been successfully erased.")
 
     def flush(self) -> None:
-        while buffer.cmdlist:
-            old_command = deque(buffer.cmdlist).popleft().strip().split()
+        deque_buffer = deque(buffer.cmdlist)
+        while deque_buffer:
+            old_command = deque_buffer.popleft()
             command1 = int(old_command[1])
-            command2 = int(old_command[2])
             match old_command[0]:
                 case "W":
+                    command2 = old_command[2]
                     self.nand_df.loc[command1, "Data"] = command2
                     self.logger.print(
                         f"Flushing... : write addr {command1} = data {command2}"
                     )
                 case "E":
+                    command2 = int(old_command[2])
                     self.nand_df.loc[command1 : command1 + command2 - 1] = INIT_VALUE
                     self.logger.print(
                         f"Flushing... : erase addr {command1} to addr {command1 + command2 - 1}"
                     )
-                    self.logger.print("SSD has been successfully flushed.")
-
+        self.logger.print("SSD has been successfully flushed.")
         buffer.flush()
         if os.path.exists(self.nand_path):
             os.remove(self.nand_path)
