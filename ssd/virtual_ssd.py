@@ -1,7 +1,9 @@
 import sys
+from collections import deque
 from typing import Optional
 
 from logger.logger import Logger
+from ssd.buffer import Buffer
 from ssd.storage_device_interface import StorageDeviceInterface
 import pandas as pd
 import os
@@ -12,6 +14,7 @@ INIT_VALUE = "0x00000000"
 class VirtualSSD(StorageDeviceInterface):
     def __init__(self) -> None:
         self.logger = Logger()
+        self.buffer = Buffer()
         self.nand_path = "nand.csv"
         self.result_path = "result.txt"
 
@@ -24,19 +27,26 @@ class VirtualSSD(StorageDeviceInterface):
         self.nand_df = pd.read_csv(self.nand_path)
 
     def write(self, address: int, data: str) -> None:
-        self.nand_df.loc[address, "Data"] = data
-        if os.path.exists(self.nand_path):
-            os.remove(self.nand_path)
-        self.nand_df["Data"].to_csv(self.nand_path, index_label="index")
+        if self.buffer.get_size() == 10:
+            self.flush()
+        else:
+            self.buffer.add_cmd("W", address, data)
+
         self.logger.print("Data has been successfully written to the SSD.")
 
     def read(self, address: int) -> None:
         if os.path.exists(self.result_path):
             os.remove(self.result_path)
 
-        result_df = pd.DataFrame(
-            data=[self.nand_df.loc[address, "Data"]], columns=["Data"]
-        )
+        read_data = None
+        if self.buffer.get_size() > 0:
+            read_data = self.buffer.read_addressvalue_in_cmdlist(address)
+        if read_data is None:
+            read_data = self.nand_df.loc[address, "Data"]
+        elif read_data == "Erase":
+            read_data = INIT_VALUE
+
+        result_df = pd.DataFrame(data=[read_data], columns=["Data"])
         result_df = result_df.replace("\n", "")
 
         with open(self.result_path, "w", encoding="utf-8") as file:
@@ -44,11 +54,36 @@ class VirtualSSD(StorageDeviceInterface):
         self.logger.print("Data has been successfully read from the SSD.")
 
     def erase(self, address: int, size: int) -> None:
-        self.nand_df.loc[address : address + size - 1, "Data"] = INIT_VALUE
+        if self.buffer.get_size() == 10:
+            self.flush()
+        else:
+            self.buffer.add_cmd("E", address, size)
+
+        self.logger.print("SSD has been successfully erased.")
+
+    def flush(self) -> None:
+        deque_buffer = deque(self.buffer.cmdlist)
+        while deque_buffer:
+            old_command = deque_buffer.popleft()
+            command1 = int(old_command[1])
+            match old_command[0]:
+                case "W":
+                    command2 = old_command[2]
+                    self.nand_df.loc[command1, "Data"] = command2
+                    self.logger.print(
+                        f"Flushing... : write addr {command1} = data {command2}"
+                    )
+                case "E":
+                    command2 = int(old_command[2])
+                    self.nand_df.loc[command1 : command1 + command2 - 1] = INIT_VALUE
+                    self.logger.print(
+                        f"Flushing... : erase addr {command1} to addr {command1 + command2 - 1}"
+                    )
+        self.logger.print("SSD has been successfully flushed.")
+        self.buffer.flush()
         if os.path.exists(self.nand_path):
             os.remove(self.nand_path)
         self.nand_df["Data"].to_csv(self.nand_path, index_label="index")
-        self.logger.print("SSD has been successfully erased.")
 
     def execute_command(
         self, cmd: str, address: Optional[str], value: Optional[str]
@@ -62,5 +97,7 @@ class VirtualSSD(StorageDeviceInterface):
         elif cmd == "E":
             if address is not None and value is not None:
                 self.erase(int(address), int(value))
+        elif cmd == "F":
+            self.flush()
         else:
             self.logger.print("INVALID COMMAND")

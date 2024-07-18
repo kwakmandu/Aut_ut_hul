@@ -1,11 +1,11 @@
 import sys
 from typing import Optional
-
 from ssd.virtual_ssd import VirtualSSD
 
 
 def main() -> None:
     ssd = VirtualSSD()
+
     cmd: Optional[str]
     address: Optional[str]
     value: Optional[str]

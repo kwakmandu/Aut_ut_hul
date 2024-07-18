@@ -8,6 +8,7 @@ ALLOWED_INITIAL_COMMANDS = [
     "read",
     "erase",
     "erase_range",
+    "flush",
     "exit",
     "help",
     "fullwrite",
@@ -40,9 +41,9 @@ class CommandValidator:
             return (
                 len(inputs) == 3
                 and self.__is_valid_address(inputs[1])
-                and self.__is_valid_address(inputs[2])
+                and 1 <= int(inputs[2]) <= 100
+                and int(inputs[1]) + int(inputs[2]) <= 100
             )
-
         elif inputs[0] == "erase_range":
             return (
                 len(inputs) == 3
@@ -84,6 +85,8 @@ class CommandExecutor:
                 self.erase(inputs[1], inputs[2])
             case "erase_range":
                 self.erase(inputs[1], str(int(inputs[2]) - int(inputs[1])))
+            case "flush":
+                self.flush()
             case "exit":
                 self.exit()
                 return False
@@ -129,6 +132,10 @@ class CommandExecutor:
                 str(isize),
             ]
         )
+
+    def flush(self) -> None:
+        self.logger.print(f"flush")
+        subprocess.run([sys.executable, f"{self.ssd_path}/ssd.py", "F"])
 
     def exit(self) -> None:
         self.logger.print(f"exit")
