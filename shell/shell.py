@@ -42,7 +42,7 @@ class Shell:
                     print("INVALID COMMAND")
                     self.logger.print(f"INVALID COMMAND - {" ".join(user_inputs)}")
                     continue
-                self.command_executor.execute_command(user_inputs)
+                self.is_run = self.command_executor.execute_command(user_inputs)
 
             except Exception as e:
                 self.logger.print(e)
