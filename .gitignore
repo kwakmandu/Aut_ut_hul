@@ -130,3 +130,5 @@ result.txt
 
 log/*.log
 log/*.log.zip
+
+buffer.csv

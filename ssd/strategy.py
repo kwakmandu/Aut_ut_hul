@@ -1,114 +1,122 @@
 from abc import ABC, abstractmethod
 from collections import deque
-from typing import Any, List, Tuple
+from typing import Any
 import heapq
+
+from ssd.buffer_cmd import BufferCmd
 
 
 class InterfaceStrategy(ABC):
     @abstractmethod
-    def update(self, cmdlist: List[Any], new_cmd: Tuple[str, int, Any]) -> List[Any]:
+    def update(self, cmd_list: list[BufferCmd], new_cmd: BufferCmd) -> list[BufferCmd]:
         pass
 
     @abstractmethod
-    def read(self, cmdlist: List[Any], address: int) -> Any:
+    def read(self, cmd_list: list[BufferCmd], address: int) -> str | None:
         pass
 
 
 class DequeStrategy(InterfaceStrategy):
-    def update(self, cmdlist: List[Any], new_cmd: Tuple[str, int, Any]) -> List[Any]:
-        deque_cmdlist = deque(cmdlist)
-        updated_cmdlist = deque()
+    def update(self, cmd_list: list[BufferCmd], new_cmd: BufferCmd) -> deque[BufferCmd]:
+        deque_cmd_list = deque(cmd_list)
+        updated_cmd_list = deque()
 
-        cmd_type, address, value = new_cmd
-        if cmd_type == "W":
-            heap_writeaddress = []
+        if new_cmd.type == "W":
+            heap_w_addr = []
 
-            while deque_cmdlist:
-                old_cmd = deque_cmdlist.popleft()
-                old_cmd_type, old_address, old_value = old_cmd
-                if old_cmd_type == "W" and old_address == address:
+            while deque_cmd_list:
+                old_cmd = deque_cmd_list.popleft()
+                if old_cmd.type == "W" and old_cmd.address == new_cmd.address:
                     continue
-                self._update_heap_writeaddress(heap_writeaddress, old_cmd)
-                self._delete_overlap_and_add_cmd(updated_cmdlist, old_cmd)
-            self._update_heap_writeaddress(heap_writeaddress, new_cmd)
-            self._delete_overlap_and_add_cmd(updated_cmdlist, new_cmd)
-            self._optimise_eraserange(updated_cmdlist, heap_writeaddress)
+                self._update_heap_write_address(heap_w_addr, old_cmd)
+                self._delete_overlap_and_add_cmd(updated_cmd_list, old_cmd)
+            self._update_heap_write_address(heap_w_addr, new_cmd)
+            self._delete_overlap_and_add_cmd(updated_cmd_list, new_cmd)
+            self._optimise_erase_range(updated_cmd_list, heap_w_addr)
 
-        if cmd_type == "E":
-            while deque_cmdlist:
-                old_cmd = deque_cmdlist.popleft()
-                old_cmd_type, old_address, old_value = old_cmd
-                if old_cmd_type == "W" and (address <= old_address < address + value):
+        if new_cmd.type == "E":
+            while deque_cmd_list:
+                old_cmd = deque_cmd_list.popleft()
+                if old_cmd.type == "W" and (
+                    new_cmd.address
+                    <= old_cmd.address
+                    < new_cmd.address + int(new_cmd.value)
+                ):
                     continue
-                updated_cmdlist = self._delete_overlap_and_add_cmd(
-                    updated_cmdlist, old_cmd
+                updated_cmd_list = self._delete_overlap_and_add_cmd(
+                    updated_cmd_list, old_cmd
                 )
-            updated_cmdlist = self._delete_overlap_and_add_cmd(updated_cmdlist, new_cmd)
-        return updated_cmdlist
+            updated_cmd_list = self._delete_overlap_and_add_cmd(
+                updated_cmd_list, new_cmd
+            )
+        return updated_cmd_list
 
-    def _delete_overlap_and_add_cmd(self, cmdlist, new_cmd):
-        if not cmdlist:
-            cmdlist.append(new_cmd)
-            return cmdlist
+    def _delete_overlap_and_add_cmd(
+        self, cmd_list: deque[BufferCmd], new_cmd: BufferCmd
+    ) -> deque[BufferCmd]:
+        if not cmd_list:
+            cmd_list.append(new_cmd)
+            return cmd_list
 
-        righttop_cmd = cmdlist[-1]
-        pop_cmd_type, pop_cmd_address, pop_cmd_value = righttop_cmd
-        new_cmd_type, new_cmd_address, new_cmd_value = new_cmd
+        right_top_cmd = cmd_list[-1]
 
-        if (pop_cmd_type == new_cmd_type == "E") and (
-            (new_cmd_address <= pop_cmd_address + int(pop_cmd_value) - 1)
-            and (new_cmd_address + int(new_cmd_value) - 1 >= pop_cmd_address)
+        if (right_top_cmd.type == new_cmd.type == "E") and (
+            (new_cmd.address <= right_top_cmd.address + int(right_top_cmd.value) - 1)
+            and (new_cmd.address + int(new_cmd.value) - 1 >= right_top_cmd.address)
         ):
-            cmdlist.pop()
-            from_index = pop_cmd_address
-            to_index = new_cmd_address + new_cmd_value
-            cmdlist.append(["E", from_index, to_index - from_index])
-            return cmdlist
+            cmd_list.pop()
+            from_index = right_top_cmd.address
+            to_index = new_cmd.address + int(new_cmd.value)
+            cmd_list.append(BufferCmd("E", from_index, str(to_index - from_index)))
+            return cmd_list
 
-        cmdlist.append(new_cmd)
-        return cmdlist
+        cmd_list.append(new_cmd)
+        return cmd_list
 
-    def read(self, cmdlist, address):
-        if not cmdlist:
+    def read(self, cmd_list: list[BufferCmd], address: int) -> str | None:
+        if not cmd_list:
             return None
 
-        for cmd in reversed(cmdlist):
-            cmd_type, cmd_address, cmd_value = cmd
-            if address == cmd_address:
-                if cmd_type == "W":
-                    return cmd_value
+        for cmd in reversed(cmd_list):
+            # cmd_type, cmd_address, cmd_value = cmd
+            if address == cmd.address:
+                if cmd.type == "W":
+                    return cmd.value
                 return "Erase"
         return None
 
-    def _update_heap_writeaddress(self, heap_writeaddress, cmd):
-        cmd_type, cmd_address, cmd_value = cmd
-        if cmd_type == "W":
-            heapq.heappush(heap_writeaddress, cmd_address)
+    def _update_heap_write_address(
+        self, heap_w_addr: list[int], cmd: BufferCmd
+    ) -> None:
+        # cmd_type, cmd_address, cmd_value = cmd
+        if cmd.type == "W":
+            heapq.heappush(heap_w_addr, cmd.address)
 
-    def _optimise_eraserange(self, updated_cmdlist, heap_writeaddress):
-        cmdlist_index = []
-        for idx, cmd in enumerate(updated_cmdlist):
-            cmd_type, cmd_address, cmd_value = cmd
-            if cmd_type == "E" and (
-                cmd_address in heap_writeaddress
-                or (cmd_address + int(cmd_value) - 1) in heap_writeaddress
+    def _optimise_erase_range(
+        self, updated_cmd_list: deque[BufferCmd], heap_w_addr: list[int]
+    ) -> None:
+        cmd_list_index = []
+        for idx, cmd in enumerate(updated_cmd_list):
+            if cmd.type == "E" and (
+                cmd.address in heap_w_addr
+                or (cmd.address + int(cmd.value) - 1) in heap_w_addr
             ):
-                cmdlist_index.append(idx)
-        if not cmdlist_index:
+                cmd_list_index.append(idx)
+        if not cmd_list_index:
             return
 
         cum_idx = 0
         stack_list = []
-        for idx in cmdlist_index:
+        for idx in cmd_list_index:
             for pop_count in range(idx - cum_idx):
-                cmd = updated_cmdlist.popleft()
+                cmd = updated_cmd_list.popleft()
                 cum_idx += 1
                 stack_list.append(cmd)
 
-            cmd = updated_cmdlist.popleft()
+            cmd = updated_cmd_list.popleft()
             cum_idx += 1
 
-            edit_cmd = self._recursive_edit_eraserange(cmd, heap_writeaddress)
+            edit_cmd = self._recursive_edit_erase_range(cmd, heap_w_addr)
             if not edit_cmd:
                 continue
 
@@ -116,22 +124,24 @@ class DequeStrategy(InterfaceStrategy):
 
         while stack_list:
             cmd_in_stack = stack_list.pop()
-            updated_cmdlist.appendleft(cmd_in_stack)
+            updated_cmd_list.appendleft(cmd_in_stack)
 
-    def _recursive_edit_eraserange(self, cmd, heap_writeaddress):
-        cmd_type, cmd_address, cmd_value = cmd
-        from_address = cmd_address
-        to_address = cmd_address + int(cmd_value) - 1
-        if int(cmd_value) == 0:
+    def _recursive_edit_erase_range(
+        self, cmd: BufferCmd, heap_w_addr: list[int]
+    ) -> BufferCmd | None:
+        # cmd_type, cmd_address, cmd_value = cmd
+        from_address = cmd.address
+        to_address = cmd.address + int(cmd.value) - 1
+        if int(cmd.value) == 0:
             return None
 
-        if from_address in heap_writeaddress:
+        if from_address in heap_w_addr:
             from_address += 1
-            cmd = [cmd_type, from_address, str(to_address - from_address + 1)]
-            cmd = self._recursive_edit_eraserange(cmd, heap_writeaddress)
-        elif to_address in heap_writeaddress:
+            cmd = BufferCmd(cmd.type, from_address, str(to_address - from_address + 1))
+            cmd = self._recursive_edit_erase_range(cmd, heap_w_addr)
+        elif to_address in heap_w_addr:
             to_address -= 1
-            cmd = [cmd_type, from_address, str(to_address - from_address + 1)]
-            cmd = self._recursive_edit_eraserange(cmd, heap_writeaddress)
+            cmd = BufferCmd(cmd.type, from_address, str(to_address - from_address + 1))
+            cmd = self._recursive_edit_erase_range(cmd, heap_w_addr)
 
         return cmd

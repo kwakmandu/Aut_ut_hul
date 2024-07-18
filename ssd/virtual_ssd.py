@@ -53,7 +53,7 @@ class VirtualSSD(StorageDeviceInterface):
             file.write(str(result_df.loc[0, "Data"]))
         self.logger.print("Data has been successfully read from the SSD.")
 
-    def erase(self, address: int, size: int) -> None:
+    def erase(self, address: int, size: str) -> None:
         if self.buffer.get_size() == 10:
             self.flush()
         else:
@@ -62,22 +62,22 @@ class VirtualSSD(StorageDeviceInterface):
         self.logger.print("SSD has been successfully erased.")
 
     def flush(self) -> None:
-        deque_buffer = deque(self.buffer.cmdlist)
+        deque_buffer = deque(self.buffer.cmd_list)
         while deque_buffer:
             old_command = deque_buffer.popleft()
-            command1 = int(old_command[1])
-            match old_command[0]:
+            address = old_command.address
+            match old_command.type:
                 case "W":
-                    command2 = old_command[2]
-                    self.nand_df.loc[command1, "Data"] = command2
+                    value = old_command.value
+                    self.nand_df.loc[address, "Data"] = value
                     self.logger.print(
-                        f"Flushing... : write addr {command1} = data {command2}"
+                        f"Flushing... : write addr {address} = data {value}"
                     )
                 case "E":
-                    command2 = int(old_command[2])
-                    self.nand_df.loc[command1 : command1 + command2 - 1] = INIT_VALUE
+                    value = int(old_command.value)
+                    self.nand_df.loc[address : address + int(value) - 1] = INIT_VALUE
                     self.logger.print(
-                        f"Flushing... : erase addr {command1} to addr {command1 + command2 - 1}"
+                        f"Flushing... : erase addr {address} to addr {address + value - 1}"
                     )
         self.logger.print("SSD has been successfully flushed.")
         self.buffer.flush()
@@ -96,7 +96,7 @@ class VirtualSSD(StorageDeviceInterface):
                 self.read(int(address))
         elif cmd == "E":
             if address is not None and value is not None:
-                self.erase(int(address), int(value))
+                self.erase(int(address), value)
         elif cmd == "F":
             self.flush()
         else:
