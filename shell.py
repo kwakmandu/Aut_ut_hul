@@ -3,7 +3,7 @@ import sys
 from shell.shell import Shell
 
 
-def main():
+def main() -> None:
     try:
         shell = Shell()
         args = sys.argv[1:]  # Get command-line arguments excluding the script name
