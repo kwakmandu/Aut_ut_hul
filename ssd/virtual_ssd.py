@@ -1,4 +1,5 @@
 import sys
+import warnings
 from collections import deque
 from typing import Optional
 
@@ -8,6 +9,7 @@ from ssd.storage_device_interface import StorageDeviceInterface
 import pandas as pd
 import os
 
+warnings.filterwarnings("ignore")
 INIT_VALUE: str = "0x00000000"
 
 

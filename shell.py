@@ -1,6 +1,8 @@
 import sys
-
+import warnings
 from shell.shell import Shell
+
+warnings.filterwarnings("ignore")
 
 
 def main() -> None:
