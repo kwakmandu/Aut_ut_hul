@@ -90,10 +90,10 @@ class Buffer(InterfaceBuffer):
         return self.cmd_list
 
     def _save_buffer_csv(self) -> None:
-        cmd_convert_to_list = []
+        cmdlist_converted_to_list = []
         for cmd in self.cmd_list:
-            cmd_convert_to_list.append([cmd.type, cmd.address, cmd.value])
-        df = pd.DataFrame(cmd_convert_to_list, columns=self.csv_header)
+            cmdlist_converted_to_list.append([cmd.type, cmd.address, cmd.value])
+        df = pd.DataFrame(cmdlist_converted_to_list, columns=self.csv_header)
         df.to_csv(self.csv_path, index=False, header=True)
 
     def flush(self) -> None:
