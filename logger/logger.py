@@ -70,7 +70,9 @@ class Logger(metaclass=SingletonMeta):
         )
 
         for log_file in log_files[:-1]:  # 가장 최근 파일을 제외한 모든 파일
-            os.rename(log_file, f"{log_file}.zip")
+            file_name, _ = os.path.splitext(log_file)  # 확장자 제거
+            new_name = f"{file_name}.zip"  # 새 이름에 .zip 추가
+            os.rename(log_file, new_name)
 
     def get_caller_info(self) -> Tuple[str, str, str]:
         stack = inspect.stack()
@@ -95,7 +97,7 @@ class Logger(metaclass=SingletonMeta):
         _, function_name, class_name = self.get_caller_info()
 
         if (
-            class_name == "Shell"
+            class_name == "CommandExecutor"
             and self.handler.stream.tell() + len(message.encode("utf-8")) >= MAX_BYTE
         ):
             self.rotate_logs()
