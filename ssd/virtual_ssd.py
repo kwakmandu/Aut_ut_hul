@@ -8,7 +8,7 @@ from ssd.storage_device_interface import StorageDeviceInterface
 import pandas as pd
 import os
 
-INIT_VALUE = "0x00000000"
+INIT_VALUE: str = "0x00000000"
 
 
 class VirtualSSD(StorageDeviceInterface):
