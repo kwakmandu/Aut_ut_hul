@@ -2,7 +2,7 @@ import contextlib
 import io
 import os
 import sys
-from commander.commander import CommandExecutor, CommandValidator
+from commander import CommandExecutor, CommandValidator
 from logger.logger import Logger
 import re
 
