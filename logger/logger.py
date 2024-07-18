@@ -24,7 +24,7 @@ class SingletonMeta(type):
 
 class Logger(metaclass=SingletonMeta):
     def __init__(self) -> None:
-        self.log_dir: str = "../log"
+        self.log_dir: str = "./log"
         self.latest_log_path: str = f"{self.log_dir}/latest.log"
         self.init_logger()
 

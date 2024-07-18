@@ -24,7 +24,7 @@ class Shell:
     def __init__(self) -> None:
         self.is_run = False
         self.ssd_dir: str = "../"
-        self.test_script_dir: str = "../testscript"
+        self.test_script_dir: str = "./testscript"
         self.command_executor: CommandExecutor = CommandExecutor()
         self.command_validator: CommandValidator = CommandValidator()
         self.logger: Logger = Logger()
