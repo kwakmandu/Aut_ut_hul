@@ -3,7 +3,7 @@ import logging
 from logging.handlers import RotatingFileHandler
 from datetime import datetime
 import inspect
-from typing import Any
+from typing import Any, Tuple
 
 MAX_BYTE = 10240
 
@@ -24,14 +24,16 @@ class SingletonMeta(type):
 
 class Logger(metaclass=SingletonMeta):
     def __init__(self) -> None:
+        self.log_dir: str = "../log"
+        self.latest_log_path: str = f"{self.log_dir}/latest.log"
         self.init_logger()
 
     def init_logger(self) -> None:
-        self.logger = logging.getLogger("DSLogger")
+        self.logger = logging.getLogger("SSD_Logger")
         self.logger.setLevel(logging.INFO)
 
         self.handler = RotatingFileHandler(
-            "../log/latest.log", maxBytes=MAX_BYTE, backupCount=0
+            self.latest_log_path, maxBytes=MAX_BYTE, backupCount=0
         )
         formatter = logging.Formatter("[%(asctime)s] %(class.func)-30s :%(message)s")
         self.handler.setFormatter(formatter)
@@ -46,9 +48,9 @@ class Logger(metaclass=SingletonMeta):
         self.logger.removeHandler(self.handler)
 
         current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
-        new_filename = f"../log/until_{current_time}.log"
+        new_filename = f"{self.log_dir}/until_{current_time}.log"
 
-        os.rename("../log/latest.log", new_filename)
+        os.rename(self.latest_log_path, new_filename)
 
         self.rename_old_logs()
 
@@ -60,8 +62,8 @@ class Logger(metaclass=SingletonMeta):
         """
         log_files = sorted(
             [
-                "../log/" + f
-                for f in os.listdir("../log")
+                f"{self.log_dir}/{f}"
+                for f in os.listdir(self.log_dir)
                 if f.startswith("until_") and not f.endswith(".zip")
             ],
             key=lambda x: os.path.getmtime(x),
@@ -70,7 +72,7 @@ class Logger(metaclass=SingletonMeta):
         for log_file in log_files[:-1]:  # 가장 최근 파일을 제외한 모든 파일
             os.rename(log_file, f"{log_file}.zip")
 
-    def get_caller_info(self) -> tuple[str]:
+    def get_caller_info(self) -> Tuple[str, str, str]:
         stack = inspect.stack()
         caller_frame = None
         for frame in stack[2:]:
@@ -98,7 +100,7 @@ class Logger(metaclass=SingletonMeta):
         파일 크기가 제한을 초과하면 회전합니다.
         호출한 모듈, 함수, 클래스 이름을 자동으로 포함시킵니다.
         """
-        module_name, function_name, class_name = self.get_caller_info()
+        _, function_name, class_name = self.get_caller_info()
 
         if (
             class_name == "Shell"
