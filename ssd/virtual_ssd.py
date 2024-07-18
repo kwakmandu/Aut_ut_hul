@@ -43,6 +43,7 @@ class VirtualSSD(StorageDeviceInterface):
         read_data = None
         if self.buffer.get_size() > 0:
             read_data = self.buffer.read_addressvalue_in_cmdlist(address)
+
         if read_data is None:
             read_data = self.nand_df.loc[address, "Data"]
         elif read_data == "Erase":
