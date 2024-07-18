@@ -8,6 +8,7 @@ from abc import ABC, abstractmethod
 
 from ssd.buffer_cmd import BufferCmd
 from ssd.strategy import DequeStrategy, InterfaceStrategy
+from ssd.strategy_factory import StrategyFactory
 
 
 class InterfaceBuffer(ABC):
@@ -40,7 +41,8 @@ class Buffer(InterfaceBuffer):
         csv_path=os.path.join(".", "buffer.csv"),
     ) -> None:
         self.cmd_list_limit_size = cmd_list_limit_size
-        self.strategy = self._select_strategy(strategy)
+        self.strategy_factory = StrategyFactory()
+        self.strategy = self.strategy_factory.select_strategy(strategy)
         self.csv_path = csv_path
         self.csv_header = None
         self.cmd_list: list[BufferCmd] = self._load_csvfile_and_set_cmd_list()
@@ -88,7 +90,10 @@ class Buffer(InterfaceBuffer):
         return self.cmd_list
 
     def _save_buffer_csv(self) -> None:
-        df = pd.DataFrame(self.cmd_list, columns=self.csv_header)
+        cmd_convert_to_list = []
+        for cmd in self.cmd_list:
+            cmd_convert_to_list.append([cmd.type, cmd.address, cmd.value])
+        df = pd.DataFrame(cmd_convert_to_list, columns=self.csv_header)
         df.to_csv(self.csv_path, index=False, header=True)
 
     def flush(self) -> None:
