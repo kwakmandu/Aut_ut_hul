@@ -67,7 +67,7 @@ class CommandValidator:
 
 class CommandExecutor:
     def __init__(self) -> None:
-        self.ssd_path: str = "../ssd"
+        self.ssd_path: str = "./"
         self.helper: Helper = Helper()
         self.logger: Logger = Logger()
 
@@ -100,15 +100,11 @@ class CommandExecutor:
 
     def write(self, address: str, data: str) -> None:
         self.logger.print(f"write {address} {data}")
-        subprocess.run(
-            [sys.executable, f"{self.ssd_path}/virtual_ssd.py", "W", address, data]
-        )
+        subprocess.run([sys.executable, f"{self.ssd_path}/ssd.py", "W", address, data])
 
     def read(self, address: str) -> None:
         self.logger.print(f"read {address}")
-        subprocess.run(
-            [sys.executable, f"{self.ssd_path}/virtual_ssd.py", "R", address]
-        )
+        subprocess.run([sys.executable, f"{self.ssd_path}/ssd.py", "R", address])
         try:
             with open(f"{self.ssd_path}/result.txt", "r") as file:
                 file_contents = file.read().strip()
@@ -121,13 +117,13 @@ class CommandExecutor:
         isize = int(size)
         while isize > 10:
             subprocess.run(
-                [sys.executable, f"{self.ssd_path}/virtual_ssd.py", "E", address, "10"]
+                [sys.executable, f"{self.ssd_path}/ssd.py", "E", address, "10"]
             )
             isize -= 10
         subprocess.run(
             [
                 sys.executable,
-                f"{self.ssd_path}/virtual_ssd.py",
+                f"{self.ssd_path}/ssd.py",
                 "E",
                 address,
                 str(isize),
