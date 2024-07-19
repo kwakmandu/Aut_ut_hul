@@ -28,7 +28,7 @@ class Shell:
                 user_inputs = input().split()
                 if not self.command_validator.is_valid_command(user_inputs):
                     print("INVALID COMMAND")
-                    self.logger.print(f"INVALID COMMAND - {" ".join(user_inputs)}")
+                    self.logger.print(f'INVALID COMMAND - {" ".join(user_inputs)}')
                     continue
                 self.is_run = self.command_executor.execute_command(user_inputs)
 

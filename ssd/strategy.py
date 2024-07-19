@@ -145,3 +145,142 @@ class DequeStrategy(InterfaceStrategy):
             cmd = self._recursive_edit_erase_range(cmd, heap_w_addr)
 
         return cmd
+
+
+class HeapStrategy(InterfaceStrategy):
+    def __init__(self) -> None:
+        self.heap_cmd_list = []
+        self.write_address_hashset = set()
+
+    def update(self, cmd_list: list[BufferCmd], new_cmd: BufferCmd) -> list[BufferCmd]:
+        if new_cmd.type == "W":
+            self._add_write_cmd_to_heap_list_and_update_hash(cmd_list, new_cmd)
+        elif new_cmd.type == "E":
+            self._add_erase_cmd_to_heap_list_and_update_hash(cmd_list, new_cmd)
+
+        self._optimise_erase_in_cmd_list()
+        cmd_list = self._convert_to_list()
+        return cmd_list
+
+    def read(self, cmd_list: list[BufferCmd], address: int) -> str | None:
+        if not cmd_list:
+            return None
+
+        for cmd in reversed(cmd_list):
+            # cmd_type, cmd_address, cmd_value = cmd
+            if (
+                cmd.type == "E"
+                and cmd.address <= address <= cmd.address + int(cmd.value) - 1
+            ):
+                return "Erase"
+            if cmd.type == "W" and cmd.address == address:
+                return cmd.value
+        return None
+
+    def _convert_to_list(self) -> list[BufferCmd]:
+        list_converted_from_heap = []
+        while self.heap_cmd_list:
+            heap_cmd = heapq.heappop(self.heap_cmd_list)
+            cmd_type, cmd_address, cmd_value = heap_cmd
+            list_converted_from_heap.append(
+                BufferCmd(cmd_type, cmd_address, str(cmd_value))
+            )
+        return list_converted_from_heap
+
+    def _optimise_erase_in_cmd_list(self) -> None:
+        temp_erase_cmd_list = []
+        while self.heap_cmd_list:
+            if self.heap_cmd_list[0][0] == "W":
+                break
+
+            erase_cmd = heapq.heappop(self.heap_cmd_list)
+            adjusted_cmd = self._adjust_erase_range_begin_end_index(erase_cmd)
+            if not adjusted_cmd:
+                continue
+
+            heapq.heappush(temp_erase_cmd_list, adjusted_cmd)
+
+        if len(temp_erase_cmd_list) < 2:
+            while temp_erase_cmd_list:
+                heapq.heappush(self.heap_cmd_list, temp_erase_cmd_list.pop())
+            return
+
+        merged_erase_cmd_list = self._merge_erase_range(temp_erase_cmd_list)
+        while merged_erase_cmd_list:
+            heapq.heappush(self.heap_cmd_list, merged_erase_cmd_list.pop())
+
+    def _add_write_cmd_to_heap_list_and_update_hash(
+        self, cmd_list: list[BufferCmd], new_cmd: BufferCmd
+    ) -> None:
+        for cmd in cmd_list:
+            if cmd.type == "W":
+                if cmd.address == new_cmd.address:
+                    continue
+                self.write_address_hashset.add(cmd.address)
+            heapq.heappush(self.heap_cmd_list, (cmd.type, cmd.address, cmd.value))
+
+        self.write_address_hashset.add(new_cmd.address)
+        heapq.heappush(
+            self.heap_cmd_list, (new_cmd.type, new_cmd.address, new_cmd.value)
+        )
+
+    def _add_erase_cmd_to_heap_list_and_update_hash(
+        self, cmd_list: list[BufferCmd], new_cmd: BufferCmd
+    ) -> None:
+        for cmd in cmd_list:
+            if cmd.type == "W":
+                if (
+                    new_cmd.address
+                    <= cmd.address
+                    <= new_cmd.address + int(new_cmd.value) - 1
+                ):
+                    continue
+                self.write_address_hashset.add(cmd.address)
+            heapq.heappush(self.heap_cmd_list, (cmd.type, cmd.address, cmd.value))
+        heapq.heappush(
+            self.heap_cmd_list, (new_cmd.type, new_cmd.address, new_cmd.value)
+        )
+
+    def _adjust_erase_range_begin_end_index(self, erase_cmd: tuple) -> tuple | None:
+        cmd_type, cmd_address, cmd_value = erase_cmd
+        from_address = cmd_address
+        to_address = cmd_address + int(cmd_value) - 1
+
+        if int(cmd_value) < 1:
+            return None
+
+        found_hash = 0
+        if from_address in self.write_address_hashset:
+            from_address += 1
+            found_hash += 1
+        if to_address in self.write_address_hashset:
+            to_address -= 1
+            found_hash += 1
+
+        if found_hash < 1:
+            return erase_cmd
+
+        erase_cmd = (cmd_type, from_address, str(to_address - from_address + 1))
+        erase_cmd = self._adjust_erase_range_begin_end_index(erase_cmd)
+        return erase_cmd
+
+    def _merge_erase_range(self, erase_cmd_list: list[tuple]) -> list[tuple]:
+        merged_cmd_list = [erase_cmd_list[0]]
+
+        for erase_cmd in erase_cmd_list[1:]:
+            erase_type, erase_address, erase_value = erase_cmd
+            erase_from = erase_address
+            erase_to = erase_address + int(erase_value) - 1
+
+            last_merged_cmd = merged_cmd_list[-1]
+            base_type, base_address, base_value = last_merged_cmd
+            base_from = base_address
+            base_to = base_address + int(base_value) - 1
+
+            if erase_from <= base_to:
+                merged_cmd_list[-1][2] = str(max(base_to, erase_to))
+            else:
+                # 겹치지 않으면 새로운 범위를 추가
+                merged_cmd_list.append(erase_cmd)
+
+        return merged_cmd_list

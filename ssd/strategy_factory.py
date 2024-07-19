@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from ssd.strategy import DequeStrategy, InterfaceStrategy
+from ssd.strategy import DequeStrategy, InterfaceStrategy, HeapStrategy
 
 
 class InterfaceStrategyFactory(ABC):
@@ -10,6 +10,9 @@ class InterfaceStrategyFactory(ABC):
 
 class StrategyFactory(InterfaceStrategyFactory):
     def select_strategy(self, strategy_name: str) -> InterfaceStrategy:
-        if strategy_name == "Deque":
+        if strategy_name.upper() == "DEQUE":
             return DequeStrategy()
-        return DequeStrategy()
+        elif strategy_name.upper() == "HEAP":
+            return HeapStrategy()
+
+        return HeapStrategy()

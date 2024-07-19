@@ -16,7 +16,7 @@ INIT_VALUE: str = "0x00000000"
 class VirtualSSD(StorageDeviceInterface):
     def __init__(self) -> None:
         self.logger = Logger()
-        self.buffer = Buffer(strategy="Deque")
+        self.buffer = Buffer(strategy="Heap")  # Heap, Deque
         self.nand_path = "nand.csv"
         self.result_path = "result.txt"
 
