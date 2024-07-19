@@ -37,7 +37,7 @@ class Buffer(InterfaceBuffer):
     def __init__(
         self,
         cmd_list_limit_size=10,
-        strategy="Deque",
+        strategy="Heap",
         csv_path=os.path.join(".", "buffer.csv"),
     ) -> None:
         self.cmd_list_limit_size = cmd_list_limit_size
@@ -75,7 +75,7 @@ class Buffer(InterfaceBuffer):
         df = pd.read_csv(self.csv_path)
         self.csv_header = df.columns.tolist()  # 헤더 저장
         cmd_list = [
-            BufferCmd(cmd_type, address, value)
+            BufferCmd(cmd_type, address, str(value))
             for cmd_type, address, value in df.values.tolist()
         ]
         return cmd_list
