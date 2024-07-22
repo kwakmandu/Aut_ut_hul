@@ -1,10 +1,12 @@
 import sys
 from typing import Optional
+
+from ssd.buffer import Buffer
 from ssd.virtual_ssd import VirtualSSD
 
 
 def main() -> None:
-    ssd = VirtualSSD()
+    ssd = VirtualSSD(Buffer(strategy="Heap"))
 
     cmd: Optional[str]
     address: Optional[str]

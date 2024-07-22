@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 from collections import deque
-from typing import Any
 import heapq
 
 from ssd.buffer_cmd import BufferCmd
