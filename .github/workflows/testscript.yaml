@@ -10,6 +10,9 @@ on:
 
 jobs:
   testscript:
+    strategy:
+      matrix:
+        test_list: [ run_list.lst, run_list2.lst, run_list4.lst ]
     runs-on: ubuntu-latest
 
     steps:
@@ -36,4 +39,4 @@ jobs:
 
       - name: Run testscript
         run: |
-          find ./ -name "*.lst" -type f -exec sh -c 'python shell.py $(basename $0)' {} \;
+          python shell.py ${{ matrix.test_list }}

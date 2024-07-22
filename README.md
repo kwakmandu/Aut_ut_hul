@@ -1,3 +1,5 @@
+[![Shell TestScript](https://github.com/kwakmandu/Aut_ut_hul/actions/workflows/testscript.yaml/badge.svg)](https://github.com/kwakmandu/Aut_ut_hul/actions/workflows/testscript.yaml)
+
 Team 명: Aht ut hul   
 의미: 앗엇헐 - 개발자를 놀래키는 금지어 사용 지양~~    
 팀장: 곽민준     
