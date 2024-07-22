@@ -48,7 +48,7 @@ class CommandValidator:
             return (
                 len(inputs) == 3
                 and self.__is_valid_address(inputs[1])
-                and self.__is_valid_address(inputs[2])
+                and self.__is_valid_address(str(int(inputs[2]) - 1))
                 and int(inputs[1]) < int(inputs[2])
             )
 
