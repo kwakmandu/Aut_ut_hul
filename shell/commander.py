@@ -119,15 +119,19 @@ class CommandExecutor:
     def erase(self, address: str, size: str) -> None:
         self.__logger.print(f"erase {address} {size}")
         isize = int(size)
+        iaddress = int(address)
         while isize > 10:
-            subprocess.run([sys.executable, self.__ssd_executable, "E", address, "10"])
+            subprocess.run(
+                [sys.executable, self.__ssd_executable, "E", str(iaddress), "10"]
+            )
+            iaddress += 10
             isize -= 10
         subprocess.run(
             [
                 sys.executable,
                 self.__ssd_executable,
                 "E",
-                address,
+                str(iaddress),
                 str(isize),
             ]
         )

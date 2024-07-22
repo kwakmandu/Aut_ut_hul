@@ -277,7 +277,11 @@ class HeapStrategy(InterfaceStrategy):
             base_to = base_address + int(base_value) - 1
 
             if erase_from <= base_to:
-                merged_cmd_list[-1][2] = str(max(base_to, erase_to))
+                merged_cmd_list[-1] = (
+                    base_type,
+                    base_address,
+                    str(max(base_to, erase_to) - base_address + 1),
+                )
             else:
                 # 겹치지 않으면 새로운 범위를 추가
                 merged_cmd_list.append(erase_cmd)
