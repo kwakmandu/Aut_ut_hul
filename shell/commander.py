@@ -68,9 +68,9 @@ class CommandValidator:
 
 class CommandExecutor:
     def __init__(self) -> None:
-        self.ssd_path: str = "./"
-        self.helper: Helper = Helper()
-        self.logger: Logger = Logger()
+        self.__ssd_path: str = "./"
+        self.__helper: Helper = Helper()
+        self.__logger: Logger = Logger()
 
     def execute_command(self, inputs: list[str]) -> bool:
         if not inputs:
@@ -102,31 +102,33 @@ class CommandExecutor:
         return True
 
     def write(self, address: str, data: str) -> None:
-        self.logger.print(f"write {address} {data}")
-        subprocess.run([sys.executable, f"{self.ssd_path}/ssd.py", "W", address, data])
+        self.__logger.print(f"write {address} {data}")
+        subprocess.run(
+            [sys.executable, f"{self.__ssd_path}/ssd.py", "W", address, data]
+        )
 
     def read(self, address: str) -> None:
-        self.logger.print(f"read {address}")
-        subprocess.run([sys.executable, f"{self.ssd_path}/ssd.py", "R", address])
+        self.__logger.print(f"read {address}")
+        subprocess.run([sys.executable, f"{self.__ssd_path}/ssd.py", "R", address])
         try:
-            with open(f"{self.ssd_path}/result.txt", "r") as file:
+            with open(f"{self.__ssd_path}/result.txt", "r") as file:
                 file_contents = file.read().strip()
                 print(file_contents)
         except FileNotFoundError:
             print("파일이 존재하지 않습니다.")
 
     def erase(self, address: str, size: str) -> None:
-        self.logger.print(f"erase {address} {size}")
+        self.__logger.print(f"erase {address} {size}")
         isize = int(size)
         while isize > 10:
             subprocess.run(
-                [sys.executable, f"{self.ssd_path}/ssd.py", "E", address, "10"]
+                [sys.executable, f"{self.__ssd_path}/ssd.py", "E", address, "10"]
             )
             isize -= 10
         subprocess.run(
             [
                 sys.executable,
-                f"{self.ssd_path}/ssd.py",
+                f"{self.__ssd_path}/ssd.py",
                 "E",
                 address,
                 str(isize),
@@ -134,23 +136,23 @@ class CommandExecutor:
         )
 
     def flush(self) -> None:
-        self.logger.print(f"flush")
-        subprocess.run([sys.executable, f"{self.ssd_path}/ssd.py", "F"])
+        self.__logger.print(f"flush")
+        subprocess.run([sys.executable, f"{self.__ssd_path}/ssd.py", "F"])
 
     def exit(self) -> None:
-        self.logger.print(f"exit")
+        self.__logger.print(f"exit")
 
     def help(self) -> None:
-        self.logger.print(f"help")
-        for h_info in self.helper.get_help_information():
+        self.__logger.print(f"help")
+        for h_info in self.__helper.get_help_information():
             print(h_info)
 
     def fullwrite(self, data: str) -> None:
-        self.logger.print(f"fullwrite {data}")
+        self.__logger.print(f"fullwrite {data}")
         for i in range(100):
             self.write(str(i), data)
 
     def fullread(self) -> None:
-        self.logger.print(f"fullread")
+        self.__logger.print(f"fullread")
         for i in range(100):
             self.read(str(i))

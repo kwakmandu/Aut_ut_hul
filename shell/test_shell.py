@@ -2,7 +2,7 @@ import sys
 from unittest import TestCase, skip
 from unittest.mock import patch, mock_open
 
-from shell import Shell
+from shell.shell import Shell
 
 
 class TestShell(TestCase):
@@ -116,7 +116,7 @@ class TestShell(TestCase):
     @patch("builtins.input", side_effect=["exit"])
     def test_exit(self, mock_input):
         self.shell.run()
-        self.assertFalse(self.shell.is_run)
+        self.assertFalse(self.shell.__is_run)
 
     @patch("builtins.input", side_effect=["help", "exit"])
     def test_help_command(self, mock_input):

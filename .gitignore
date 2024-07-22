@@ -129,6 +129,6 @@ result.txt
 /ssd/result.txt
 
 log/*.log
-log/*.log.zip
+log/*.zip
 
 buffer.csv
