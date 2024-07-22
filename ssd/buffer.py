@@ -38,40 +38,37 @@ class Buffer(InterfaceBuffer):
         strategy="Heap",
         csv_path=os.path.join(".", "buffer.csv"),
     ) -> None:
-        self.cmd_list_limit_size = cmd_list_limit_size
-        self.strategy_factory = StrategyFactory()
-        self.strategy = self.strategy_factory.select_strategy(strategy)
-        self.csv_path = csv_path
-        self.csv_header = None
-        self.cmd_list: list[BufferCmd] = self._load_csvfile_and_set_cmd_list()
+        self.__cmd_list_limit_size = cmd_list_limit_size
+        self.__strategy = StrategyFactory().select_strategy(strategy)
+        self.__csv_path = csv_path
+        self.__csv_header = None
+        self.__cmd_list: list[BufferCmd] = self._load_csvfile_and_set_cmd_list()
 
     def add_cmd(self, cmd_type: str, address: int, value: str) -> None:
         if self._is_invalid():
             raise Exception("Invalid error occur")
 
-        self.cmd_list = self.strategy.update(
-            self.cmd_list, BufferCmd(cmd_type, address, value)
+        self.__cmd_list = self.__strategy.update(
+            self.__cmd_list, BufferCmd(cmd_type, address, value)
         )
         self._save_buffer_csv()
 
     def read_addressvalue_in_cmdlist(self, address: int) -> str | None:
-        rst_value = self.strategy.read(self.cmd_list, address)  # value or None
+        rst_value = self.__strategy.read(self.__cmd_list, address)  # value or None
         return rst_value
 
     def _select_strategy(self, strategy: str) -> InterfaceStrategy:
-        # TODO(gyu.byeon): 팩토리 패턴으로 변경
-        if strategy == "Deque":
-            return DequeStrategy()
+        return StrategyFactory().select_strategy(strategy)
 
     def _is_invalid(self) -> bool:
-        return len(self.cmd_list) >= self.cmd_list_limit_size
+        return len(self.__cmd_list) >= self.__cmd_list_limit_size
 
     def _load_csvfile_and_set_cmd_list(self) -> list[BufferCmd]:
-        if not os.path.exists(self.csv_path):
+        if not os.path.exists(self.__csv_path):
             init_df = pd.DataFrame(columns=["command", "address", "value"])
-            init_df.to_csv(self.csv_path, index=False)
-        df = pd.read_csv(self.csv_path)
-        self.csv_header = df.columns.tolist()  # 헤더 저장
+            init_df.to_csv(self.__csv_path, index=False)
+        df = pd.read_csv(self.__csv_path)
+        self.__csv_header = df.columns.tolist()  # 헤더 저장
         cmd_list = [
             BufferCmd(cmd_type, address, str(value))
             for cmd_type, address, value in df.values.tolist()
@@ -79,21 +76,21 @@ class Buffer(InterfaceBuffer):
         return cmd_list
 
     def get_cmd_list_limit_size(self) -> int:
-        return self.cmd_list_limit_size
+        return self.__cmd_list_limit_size
 
     def get_size(self) -> int:
-        return len(self.cmd_list)
+        return len(self.__cmd_list)
 
     def get_cmd_list(self) -> list[BufferCmd]:
-        return self.cmd_list
+        return self.__cmd_list
 
     def _save_buffer_csv(self) -> None:
-        cmdlist_converted_to_list = []
-        for cmd in self.cmd_list:
-            cmdlist_converted_to_list.append([cmd.type, cmd.address, cmd.value])
-        df = pd.DataFrame(cmdlist_converted_to_list, columns=self.csv_header)
-        df.to_csv(self.csv_path, index=False, header=True)
+        cmd_list_converted_to_list = []
+        for cmd in self.__cmd_list:
+            cmd_list_converted_to_list.append([cmd.type, cmd.address, cmd.value])
+        df = pd.DataFrame(cmd_list_converted_to_list, columns=self.__csv_header)
+        df.to_csv(self.__csv_path, index=False, header=True)
 
     def flush(self) -> None:
-        self.cmd_list = []
+        self.__cmd_list = []
         self._save_buffer_csv()

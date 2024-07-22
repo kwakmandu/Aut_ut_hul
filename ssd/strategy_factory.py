@@ -3,13 +3,15 @@ from ssd.strategy import DequeStrategy, InterfaceStrategy, HeapStrategy
 
 
 class InterfaceStrategyFactory(ABC):
+    @staticmethod
     @abstractmethod
-    def select_strategy(self, strategy_name: str) -> InterfaceStrategy:
+    def select_strategy(strategy_name: str) -> InterfaceStrategy:
         pass
 
 
 class StrategyFactory(InterfaceStrategyFactory):
-    def select_strategy(self, strategy_name: str) -> InterfaceStrategy:
+    @staticmethod
+    def select_strategy(strategy_name: str) -> InterfaceStrategy:
         if strategy_name.upper() == "DEQUE":
             return DequeStrategy()
         elif strategy_name.upper() == "HEAP":

@@ -67,8 +67,9 @@ class CommandValidator:
 
 
 class CommandExecutor:
-    def __init__(self) -> None:
+    def __init__(self, ssd_executable: str = "ssd.py") -> None:
         self.__ssd_path: str = "./"
+        self.__ssd_executable: str = self.__ssd_path + "/" + ssd_executable
         self.__helper: Helper = Helper()
         self.__logger: Logger = Logger()
 
@@ -103,13 +104,11 @@ class CommandExecutor:
 
     def write(self, address: str, data: str) -> None:
         self.__logger.print(f"write {address} {data}")
-        subprocess.run(
-            [sys.executable, f"{self.__ssd_path}/ssd.py", "W", address, data]
-        )
+        subprocess.run([sys.executable, self.__ssd_executable, "W", address, data])
 
     def read(self, address: str) -> None:
         self.__logger.print(f"read {address}")
-        subprocess.run([sys.executable, f"{self.__ssd_path}/ssd.py", "R", address])
+        subprocess.run([sys.executable, self.__ssd_executable, "R", address])
         try:
             with open(f"{self.__ssd_path}/result.txt", "r") as file:
                 file_contents = file.read().strip()
@@ -121,14 +120,12 @@ class CommandExecutor:
         self.__logger.print(f"erase {address} {size}")
         isize = int(size)
         while isize > 10:
-            subprocess.run(
-                [sys.executable, f"{self.__ssd_path}/ssd.py", "E", address, "10"]
-            )
+            subprocess.run([sys.executable, self.__ssd_executable, "E", address, "10"])
             isize -= 10
         subprocess.run(
             [
                 sys.executable,
-                f"{self.__ssd_path}/ssd.py",
+                self.__ssd_executable,
                 "E",
                 address,
                 str(isize),
@@ -137,7 +134,7 @@ class CommandExecutor:
 
     def flush(self) -> None:
         self.__logger.print(f"flush")
-        subprocess.run([sys.executable, f"{self.__ssd_path}/ssd.py", "F"])
+        subprocess.run([sys.executable, self.__ssd_executable, "F"])
 
     def exit(self) -> None:
         self.__logger.print(f"exit")
@@ -156,3 +153,6 @@ class CommandExecutor:
         self.__logger.print(f"fullread")
         for i in range(100):
             self.read(str(i))
+
+    def set_ssd_executable(self, ssd_executable: str) -> None:
+        self.__ssd_executable: str = self.__ssd_path + "/" + ssd_executable
