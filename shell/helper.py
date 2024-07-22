@@ -6,6 +6,9 @@ class Helper:
             "  read <LBA>           - Read value from the specified LBA",
             "  fullwrite <value>    - Write value to all LBAs",
             "  fullread             - Read values from all LBAs",
+            "  erase_range <F_LBA> <L_LBA> - Erase LBAs from F_LBA up to (but not including) L_LBA",
+            "  erase <LBA> <size>   - Erase the specified number of LBAs starting from the given LBA",
+            "  flush                - Apply all pending write and erase operations from buffer to NAND, then clear the buffer",
             "  exit                 - Exit the shell",
             "  help                 - Show this help message",
         ]
