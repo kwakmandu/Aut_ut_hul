@@ -61,7 +61,7 @@ class VirtualSSD(StorageDeviceInterface):
         self.__logger.print("SSD has been successfully erased.")
 
     def flush(self) -> None:
-        deque_buffer = deque(self.__buffer.cmd_list)
+        deque_buffer = deque(self.__buffer.get_cmd_list())
         while deque_buffer:
             old_command = deque_buffer.popleft()
             address = old_command.address
